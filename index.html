@@ -3,51 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <title>For Vaishnavi ❤️</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<audio id="bgMusic" loop>
-  <source src="https://files.catbox.moe/4c1p9y.mp3" type="audio/mpeg">
-</audio>
+<!-- Hearts container -->
+<div id="hearts"></div>
 
-<!-- ENVELOPE -->
-<div class="container" id="envelopeStage">
-  <div class="envelope" onclick="openEnvelope()">
+<!-- Envelope Scene -->
+<div id="scene">
+  <div id="envelope" onclick="openEnvelope()">
     <div class="back"></div>
-    <div class="letter">
-      <h2>Dear Vaishnavi Ravi 💌</h2>
-      <p>
-        Every day with you feels softer,<br>
-        warmer, and more meaningful.
-      </p>
-      <p class="big-question">
-        Will you be my Valentine? 💖
-      </p>
+    <div class="letter" onclick="expandLetter(event)">
+      <p>Will you be my Valentine? 💖</p>
     </div>
     <div class="front"></div>
-    <div class="top"></div>
+    <div class="flap"></div>
+  </div>
+</div>
+
+<!-- Expanded Letter -->
+<div id="expanded-letter" class="hidden">
+  <div class="paper">
+    <h1>Vaishnavi ❤️</h1>
+    <p>
+      From the moment you came into my life,<br><br>
+      everything started feeling softer, warmer,<br>
+      and more meaningful.<br><br>
+
+      You are my calm on overwhelming days,<br>
+      my happiness on ordinary ones,<br>
+      and my favorite part of every day.<br><br>
+
+      Will you be my Valentine? 💌
+    </p>
+
+    <button onclick="goToChoice()">Continue 💕</button>
   </div>
 </div>
 
 <!-- YES / NO -->
-<div class="container hidden" id="choiceStage">
-  <h1>So… what do you say? 💕</h1>
+<div id="choice" class="hidden">
+  <h1>Will you be my Valentine? 💘</h1>
   <div class="buttons">
-    <button id="yesBtn" onclick="sayYes()">YES 💘</button>
-    <button id="noBtn">NO 😜</button>
+    <button id="yesBtn" onclick="sayYes()">YES 💕</button>
+    <button id="noBtn">NO 😛</button>
   </div>
 </div>
 
-<!-- CELEBRATION -->
-<div class="container hidden" id="celebrationStage">
+<!-- Celebration -->
+<div id="celebration" class="hidden">
   <h1>You said YES 😭💖</h1>
 
   <div class="bouquet">
-    <div class="tulip"></div>
-    <div class="tulip"></div>
-    <div class="tulip"></div>
+    <div class="tulip"><div class="petal"></div><div class="stem"></div></div>
+    <div class="tulip"><div class="petal"></div><div class="stem"></div></div>
+    <div class="tulip"><div class="petal"></div><div class="stem"></div></div>
   </div>
 
   <h2>100 Reasons Why I Love You</h2>
@@ -57,3 +68,4 @@
 <script src="script.js"></script>
 </body>
 </html>
+
