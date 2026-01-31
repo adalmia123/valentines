@@ -26,7 +26,7 @@
             overflow: hidden; 
         }
 
-        /* --- ENVELOPE CONTAINER --- */
+        /* --- PHASE 1: ENVELOPE --- */
         .container {
             position: relative;
             width: 400px;
@@ -37,276 +37,156 @@
 
         .container:hover { transform: scale(1.02); transition: transform 0.3s; }
 
-        .envelope {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
+        .envelope { position: relative; width: 100%; height: 100%; }
 
         .back {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--env-inside);
-            border-radius: 0 0 10px 10px;
-            z-index: 1;
+            border-radius: 0 0 10px 10px; z-index: 1;
         }
 
         .letter {
-            position: absolute;
-            bottom: 0; 
-            left: 5%;
-            width: 90%;
-            height: 90%;
-            background: var(--paper-color);
-            border: 1px solid var(--paper-line);
+            position: absolute; bottom: 0; left: 5%; width: 90%; height: 90%;
+            background: var(--paper-color); border: 1px solid var(--paper-line);
             z-index: 2; 
             transition: transform 0.6s ease-in-out, top 0.6s, left 0.6s, width 0.6s, height 0.6s, box-shadow 0.6s;
-            padding: 30px; 
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+            padding: 30px; box-sizing: border-box;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
 
         .pocket {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 3; 
-            pointer-events: none; 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 3; pointer-events: none; 
         }
 
         .flap { position: absolute; }
-
-        .flap.left {
-            top: 0; left: 0;
-            border-top: 130px solid transparent;
-            border-bottom: 130px solid transparent;
-            border-left: 220px solid var(--env-color);
-        }
-        
-        .flap.right {
-            top: 0; right: 0;
-            border-top: 130px solid transparent;
-            border-bottom: 130px solid transparent;
-            border-right: 220px solid var(--env-color);
-        }
-
-        .flap.bottom {
-            bottom: 0; left: 0;
-            border-left: 200px solid transparent;
-            border-right: 200px solid transparent;
-            border-bottom: 150px solid var(--env-dark); 
-            border-radius: 0 0 10px 10px;
-        }
+        .flap.left { top: 0; left: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-left: 220px solid var(--env-color); }
+        .flap.right { top: 0; right: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-right: 220px solid var(--env-color); }
+        .flap.bottom { bottom: 0; left: 0; border-left: 200px solid transparent; border-right: 200px solid transparent; border-bottom: 150px solid var(--env-dark); border-radius: 0 0 10px 10px; }
 
         .lid {
-            position: absolute;
-            top: 0; left: 0;
-            width: 0; height: 0;
-            border-left: 200px solid transparent;
-            border-right: 200px solid transparent;
-            border-top: 140px solid var(--env-color); 
-            transform-origin: top;
-            transition: transform 0.6s ease-in-out;
-            z-index: 4; 
+            position: absolute; top: 0; left: 0; width: 0; height: 0;
+            border-left: 200px solid transparent; border-right: 200px solid transparent; border-top: 140px solid var(--env-color); 
+            transform-origin: top; transition: transform 0.6s ease-in-out; z-index: 4; 
         }
 
-        .letter h2 {
-            font-family: 'Dancing Script', cursive;
-            color: #d32f2f;
-            font-size: 2.5rem;
-            margin: 5px 0 15px 0;
-        }
-        
-        .letter p {
-            font-family: 'Caveat', cursive;
-            font-size: 1.5rem;
-            color: #444;
-            margin: 5px 0;
-            line-height: 1.2;
-        }
+        .letter h2 { font-family: 'Dancing Script', cursive; color: #d32f2f; font-size: 2.5rem; margin: 5px 0 15px 0; }
+        .letter p { font-family: 'Caveat', cursive; font-size: 1.5rem; color: #444; margin: 5px 0; line-height: 1.2; }
+        .letter-content { opacity: 0; transition: opacity 0.5s ease 0.5s; }
 
-        .letter-content {
-            opacity: 0;
-            transition: opacity 0.5s ease 0.5s;
-        }
-
+        /* Animation States */
         .open .lid { transform: rotateX(180deg); z-index: 0; }
         .open .letter { transform: translateY(-220px); z-index: 5; }
-
+        
         .letter.full-mode {
-            position: fixed; 
-            top: 50%; 
-            left: 50%;
+            position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(1.2) !important; 
-            width: 400px;
-            height: 500px;
-            z-index: 1000;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-            border-radius: 10px;
+            width: 400px; height: 500px; z-index: 1000;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4); border-radius: 10px;
         }
         .letter.full-mode .letter-content { opacity: 1; }
 
-        .btn-group {
-            margin-top: 40px;
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-
+        /* Buttons */
+        .btn-group { margin-top: 40px; display: flex; gap: 20px; justify-content: center; }
         button {
-            padding: 12px 35px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: bold;
-            font-size: 16px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 12px 35px; font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 16px;
+            border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             transition: all 0.3s ease; 
         }
-
         #yesBtn { background-color: #ff4d6d; color: white; }
-        
-        #noBtn { 
-            background-color: #e0e0e0; 
-            color: #333; 
-            position: relative; 
-            transition: top 0.4s ease, left 0.4s ease; 
-        }
-
+        #noBtn { background-color: #e0e0e0; color: #333; position: relative; transition: top 0.3s ease, left 0.3s ease; }
         #yesBtn:hover { transform: scale(1.1); }
 
-        /* --- CELEBRATION PAGE --- */
+        /* --- PHASE 2: CELEBRATION LAYOUT --- */
         #celebration {
             display: none;
-            width: 100%;
-            height: 100vh;
-            position: fixed;
-            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            position: fixed; top: 0; left: 0;
             background-color: var(--bg-color);
             z-index: 100;
-            overflow-y: auto;
-            /* Scroll snapping for smooth feel */
-            scroll-behavior: smooth;
+            overflow: hidden; /* No body scroll */
         }
 
-        /* Fixed Header so it doesn't scroll away immediately */
-        .header-container {
-            position: fixed;
+        /* HEADER SECTION */
+        .header-area {
+            position: absolute;
             top: 20px;
             width: 100%;
             text-align: center;
             z-index: 20;
-            pointer-events: none; /* Let clicks pass through */
+        }
+        .header-area h1 {
+            font-family: 'Dancing Script', cursive; font-size: 4rem; color: #c92a42;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); margin: 0;
+        }
+        .header-area h2 {
+            font-family: 'Poppins', sans-serif; font-size: 1.2rem; color: #666;
+            margin-top: 5px; background: rgba(255,255,255,0.6); 
+            display: inline-block; padding: 5px 15px; border-radius: 20px;
         }
 
-        #celebration h1 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 4rem;
-            color: #c92a42;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
-            margin: 0;
-        }
-
-        #garden {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+        /* CAROUSEL (Top Half) */
+        .carousel-container {
+            position: absolute;
+            top: 140px; /* Below header */
             width: 100%;
-            height: 100%;
-            z-index: 1; 
-            pointer-events: none;
+            height: 250px;
+            overflow-x: auto; /* Horizontal Scroll */
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 20px 0;
+            z-index: 30;
+            /* Hide Scrollbar */
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+            /* Smooth snap */
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+        }
+        .carousel-container::-webkit-scrollbar { display: none; }
+
+        .carousel-track {
+            display: inline-flex;
+            gap: 30px;
+            padding: 0 50vw; /* Center the first item */
         }
 
-        /* --- THE GLASSY NOTES --- */
-        .reasons-grid {
-            display: grid;
-            /* Responsive Grid: Adjusts automatically */
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            /* Push content down so we see flowers first */
-            padding-top: 40vh; 
-            padding-bottom: 100px;
-            padding-left: 20px;
-            padding-right: 20px;
-            position: relative;
-            z-index: 5;
-        }
-
-        .sticky-note {
-            padding: 20px;
-            font-family: 'Indie Flower', cursive;
-            font-size: 1.3rem;
-            color: #333; /* Darker text for readability */
-            
-            /* Glassmorphism Effect */
-            background: rgba(255, 255, 255, 0.5); /* Semi-transparent */
-            backdrop-filter: blur(5px); /* Blurs the flowers behind */
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            
-            /* Organic Shape */
-            border-radius: 20px 20px 20px 5px; /* Petal/Bubble shape */
-            
-            display: flex;
+        .note-card {
+            width: 220px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            white-space: normal; /* Allow text wrap inside card */
+            padding: 20px;
+            font-family: 'Indie Flower', cursive;
+            font-size: 1.4rem;
+            color: #444;
             text-align: center;
-            min-height: 120px;
-            
-            transition: transform 0.3s ease;
+            scroll-snap-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
         }
-        
-        .sticky-note:hover { 
-            transform: scale(1.05) !important; 
-            background: rgba(255, 255, 255, 0.8); /* More opaque on hover */
-            z-index: 10; 
-        }
+        .note-card:hover { transform: scale(1.1) rotate(-2deg); z-index: 40; background: white;}
 
-        /* Mobile Adjustments */
-        @media (max-width: 600px) {
-            .reasons-grid {
-                grid-template-columns: 1fr; /* Single column on mobile for readability */
-                gap: 15px;
-                padding-top: 30vh;
-            }
-            
-            .sticky-note {
-                font-size: 1.1rem;
-                min-height: 80px;
-                background: rgba(255, 255, 255, 0.6); /* Slightly more opaque on mobile */
-            }
-            
-            #celebration h1 {
-                font-size: 2.5rem;
-            }
-            
-            .container {
-                width: 90vw;
-                height: 60vw;
-            }
-            
-            .letter.full-mode {
-                width: 90vw;
-                height: 70vh;
-            }
-        }
-
-        .css-heart {
+        /* GARDEN (Bottom Half) */
+        #garden {
             position: absolute;
-            width: 30px;
-            height: 30px;
-            transform: rotate(-45deg);
+            bottom: 0; left: 0;
+            width: 100%; height: 60%; /* Occupies bottom 60% */
+            z-index: 10; 
             pointer-events: none;
-            z-index: 20;
-            opacity: 0; 
+        }
+
+        /* HEARTS */
+        .css-heart {
+            position: absolute; width: 30px; height: 30px;
+            transform: rotate(-45deg); pointer-events: none; z-index: 50; opacity: 0; 
         }
         .css-heart::before, .css-heart::after {
             content: ""; position: absolute; width: 30px; height: 30px;
@@ -354,14 +234,17 @@
     </div>
 
     <div id="celebration">
-        <div class="header-container">
+        <div class="header-area">
             <h1>YAY! I Love You! ❤️</h1>
+            <h2>Here are 100 reasons why:</h2>
         </div>
         
+        <div class="carousel-container">
+            <div class="carousel-track" id="carouselTrack">
+                </div>
+        </div>
+
         <canvas id="garden"></canvas>
-        
-        <div class="reasons-grid" id="reasonsGrid">
-            </div>
     </div>
 
     <script>
@@ -371,54 +254,42 @@
         const letter = document.getElementById('letter');
         const noBtn = document.getElementById('noBtn');
 
-        // 1. OPEN ENVELOPE LOGIC
+        // 1. ENVELOPE LOGIC
         function openEnvelope() {
             if (!isOpen) {
                 container.classList.add('open');
                 isOpen = true;
-                
                 for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
-
-                setTimeout(() => {
-                    letter.classList.add('full-mode');
-                    canRunaway = true; 
-                }, 800);
+                setTimeout(() => { letter.classList.add('full-mode'); canRunaway = true; }, 800);
             }
         }
 
-        // 2. RUNAWAY NO BUTTON (FIXED)
-        let hasRunAway = false;
+        // 2. SAFE RUNAWAY BUTTON
         function runAway(e) {
             e.stopPropagation();
             if (!canRunaway) return;
             
-            if (!hasRunAway) {
-                const rect = noBtn.getBoundingClientRect();
-                noBtn.style.left = rect.left + 'px';
-                noBtn.style.top = rect.top + 'px';
-                noBtn.style.position = 'fixed'; 
-                hasRunAway = true;
-                setTimeout(moveButton, 50); 
-            } else {
-                moveButton();
-            }
+            // Switch to fixed on first interaction to allow free movement
+            noBtn.style.position = 'fixed'; 
             
-            function moveButton() {
-                const padding = 80;
-                const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-                const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-                
-                const newX = Math.max(padding, Math.random() * maxX);
-                const newY = Math.max(padding, Math.random() * maxY);
+            // Get viewport safe zone (padding 50px)
+            const padding = 50;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            // Randomly pick a new spot strictly within bounds
+            const newX = Math.random() * (maxX - padding) + padding;
+            const newY = Math.random() * (maxY - padding) + padding;
 
-                noBtn.style.left = newX + 'px'; 
-                noBtn.style.top = newY + 'px'; 
-                
-                const yesBtn = document.getElementById('yesBtn');
-                let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-                yesBtn.style.fontSize = (currentSize + 2) + 'px';
-                yesBtn.style.padding = '15px 40px';
-            }
+            noBtn.style.left = newX + 'px'; 
+            noBtn.style.top = newY + 'px'; 
+            noBtn.style.zIndex = '2000';
+            
+            // Grow Yes
+            const yesBtn = document.getElementById('yesBtn');
+            let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = (currentSize + 2) + 'px';
+            yesBtn.style.padding = '15px 40px';
         }
 
         // 3. CELEBRATION
@@ -436,7 +307,7 @@
             setInterval(() => spawnHeart(false), 400); 
         }
 
-        // 4. DATA GENERATION
+        // 4. GENERATE NOTES CAROUSEL
         const myReasons = [
             "Your kindness", "The way you smell", "Your cooking", "Your ambition",
             "Our late night talks", "Your eyes", "How you support me", "Your hugs",
@@ -445,27 +316,23 @@
         ];
         while (myReasons.length < 100) { myReasons.push("Reason #" + (myReasons.length + 1) + ": I love you!"); }
         
-        // PASTEL COLORS (Semi-Transparent Backgrounds via CSS, these are fallback)
-        // We will actually apply these as borders or soft tints in JS
-        const tintColors = ['#ffccd5', '#e2f0cb', '#c7ceea', '#fcf4dd', '#e0f3db'];
+        const cardColors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#FDFD96', '#FFFACD', '#C3B1E1'];
 
         function generateReasons() {
-            const grid = document.getElementById('reasonsGrid');
+            const track = document.getElementById('carouselTrack');
             myReasons.forEach((reason) => {
-                const note = document.createElement('div');
-                note.classList.add('sticky-note');
-                note.innerText = reason;
-                
-                // Add a subtle colored border or tint based on random choice
-                const color = tintColors[Math.floor(Math.random() * tintColors.length)];
-                note.style.borderLeft = `5px solid ${color}`;
-                
-                grid.appendChild(note);
+                const card = document.createElement('div');
+                card.classList.add('note-card');
+                card.innerText = reason;
+                // Add a cute colored border
+                const color = cardColors[Math.floor(Math.random() * cardColors.length)];
+                card.style.borderTop = `5px solid ${color}`;
+                track.appendChild(card);
             });
         }
 
-        // 5. HEART SPAWNER
-        const heartColors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#C3B1E1', '#DCD0FF'];
+        // 5. HEARTS
+        const heartColors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#C3B1E1'];
         function spawnHeart(isBalloon) {
             const heart = document.createElement('div');
             heart.classList.add('css-heart');
@@ -497,34 +364,27 @@
             
             function resize() {
                 canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+                canvas.height = window.innerHeight * 0.6; // Only bottom 60%
             }
             resize();
             window.addEventListener('resize', resize);
 
             const flowers = [];
 
-            // --- PALETTES ---
+            // PALETTES
             const ROSE_PALETTES = [
                 { base: '#990000', mid: '#cc0000', tip: '#ff0000' }, 
                 { base: '#881111', mid: '#aa2222', tip: '#d00000' }, 
                 { base: '#c9184a', mid: '#ff4d6d', tip: '#ff758f' }, 
                 { base: '#ffcccc', mid: '#ffe5ec', tip: '#ffffff' }, 
-                { base: '#ff9f1c', mid: '#ffbf69', tip: '#ffffff' }, 
             ];
-
             const CARNATION_PALETTES = [
                 { base: '#f8f9fa', mid: '#ffe5ec', tip: '#ff0a54' }, 
-                { base: '#f8f9fa', mid: '#e2eafc', tip: '#3a86ff' }, 
                 { base: '#f8f9fa', mid: '#f3c4fb', tip: '#9d4edd' }, 
-                { base: '#fff0f3', mid: '#ffccd5', tip: '#ff477e' }, 
             ];
-
             const TULIP_PALETTES = [
                 { base: '#7209b7', mid: '#b5179e', tip: '#f72585' }, 
                 { base: '#d00000', mid: '#e85d04', tip: '#ffba08' }, 
-                { base: '#e01e37', mid: '#da1e37', tip: '#ffffff' }, 
-                { base: '#fb6f92', mid: '#ff8fab', tip: '#ffe5ec' }, 
             ];
 
             function drawComplexPetal(x, y, w, h, palette, angle, noise = 0) {
@@ -532,7 +392,6 @@
                 ctx.translate(x, y);
                 ctx.rotate(angle);
                 ctx.beginPath();
-                
                 if (noise > 0) {
                     ctx.moveTo(0, 0);
                     for(let i=0; i<=h; i+=3) {
@@ -550,12 +409,10 @@
                     ctx.bezierCurveTo(-w, -h/2, -w/2, -h, 0, -h); 
                     ctx.bezierCurveTo(w/2, -h, w, -h/2, 0, 0);    
                 }
-                
                 let grad = ctx.createLinearGradient(0, 0, 0, -h);
                 grad.addColorStop(0, palette.base);
                 grad.addColorStop(0.5, palette.mid);
                 grad.addColorStop(1, palette.tip);
-                
                 ctx.fillStyle = grad;
                 ctx.fill();
                 ctx.restore();
@@ -573,9 +430,7 @@
                     else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
                     else this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
 
-                    this.bloomed = false; 
-                    this.bloomSize = 0; 
-                    this.maxBloom = Math.random() * 0.5 + 0.6; 
+                    this.bloomed = false; this.bloomSize = 0; this.maxBloom = Math.random() * 0.5 + 0.6; 
                 }
 
                 draw() {
@@ -586,20 +441,16 @@
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
                     if(this.height > 60) { drawComplexPetal(this.x, this.originalY - 50, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, -1.5, 0); }
-                    if(this.height > 100) { drawComplexPetal(this.x, this.originalY - 90, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, 1.5, 0); }
-
+                    
                     if (this.bloomed) {
                         const headX = this.x; const headY = this.originalY - this.height; const s = this.bloomSize * 35;
-
                         if (this.type === 'rose') {
                             for(let i=0; i<8; i++) { drawComplexPetal(headX, headY, s, s, this.palette, (i * (Math.PI*2)/8), 0); }
                             for(let i=0; i<6; i++) { drawComplexPetal(headX, headY, s*0.7, s*0.8, this.palette, (i * (Math.PI*2)/6) + 0.5, 0); }
                             for(let i=0; i<4; i++) { drawComplexPetal(headX, headY, s*0.4, s*0.5, this.palette, (i * (Math.PI*2)/4), 0); }
-
                         } else if (this.type === 'carnation') {
                             for(let i=0; i<10; i++) { drawComplexPetal(headX, headY, s*0.9, s*1.3, this.palette, (i * (Math.PI*2)/10), 3); }
                             for(let i=0; i<7; i++) { drawComplexPetal(headX, headY, s*0.7, s*1.0, this.palette, (i * (Math.PI*2)/7) + 0.3, 3); }
-
                         } else if (this.type === 'tulip') {
                             drawComplexPetal(headX, headY, s, s*1.5, this.palette, -0.35, 0);
                             drawComplexPetal(headX, headY, s, s*1.5, this.palette, 0.35, 0);
@@ -616,15 +467,9 @@
             }
 
             const types = ['rose', 'tulip', 'carnation'];
-
-            // DENSE: Spacing 15px
             for(let i=0; i<window.innerWidth; i+=15) {
                 const depthY = Math.random() * 60; 
-                flowers.push(new Flower(
-                    i + Math.random()*10, 
-                    canvas.height + depthY, 
-                    types[Math.floor(Math.random()*types.length)]
-                ));
+                flowers.push(new Flower(i + Math.random()*10, canvas.height + depthY, types[Math.floor(Math.random()*types.length)]));
             }
 
             function animate() {
