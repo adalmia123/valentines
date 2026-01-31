@@ -62,11 +62,8 @@
             height: 90%;
             background: var(--paper-color);
             border: 1px solid var(--paper-line);
-            
-            /* Initial State: Inside Pocket */
             z-index: 2; 
             transition: transform 0.6s ease-in-out, top 0.6s, left 0.6s, width 0.6s, height 0.6s, box-shadow 0.6s;
-            
             padding: 30px; 
             box-sizing: border-box;
             display: flex;
@@ -138,7 +135,6 @@
             line-height: 1.2;
         }
 
-        /* Hide buttons/text initially to prevent peeking */
         .letter-content {
             opacity: 0;
             transition: opacity 0.5s ease 0.5s;
@@ -158,12 +154,11 @@
             z-index: 5; 
         }
 
-        /* Step 3: Present Letter (Center & Expand) - Applied via JS */
+        /* Step 3: Present Letter (Center & Expand) */
         .letter.full-mode {
-            position: fixed; /* Break out of envelope */
+            position: fixed; 
             top: 50%; 
             left: 50%;
-            /* Center and Scale Up */
             transform: translate(-50%, -50%) scale(1.2) !important; 
             width: 400px;
             height: 500px;
@@ -173,7 +168,7 @@
         }
 
         .letter.full-mode .letter-content {
-            opacity: 1; /* Show text only when centered */
+            opacity: 1; 
         }
 
         /* --- BUTTONS --- */
@@ -201,8 +196,8 @@
         #noBtn { 
             background-color: #e0e0e0; 
             color: #333; 
-            position: relative; 
-            transition: top 0.4s ease, left 0.4s ease; 
+            position: absolute; /* Changed to absolute relative to button group initially */
+            transition: top 0.3s ease, left 0.3s ease; /* Fast transition for bounce */
         }
 
         #yesBtn:hover { transform: scale(1.1); }
@@ -231,7 +226,6 @@
             z-index: 10;
         }
 
-        /* CANVAS FOR FLOWERS */
         #garden {
             position: fixed;
             bottom: 0;
@@ -242,7 +236,6 @@
             pointer-events: none;
         }
 
-        /* NOTES GRID */
         .reasons-grid {
             display: flex;
             flex-wrap: wrap;
@@ -272,7 +265,6 @@
         
         .sticky-note:hover { transform: scale(1.1) rotate(0deg) !important; z-index: 100; }
 
-        /* --- CSS HEARTS --- */
         .css-heart {
             position: absolute;
             width: 30px;
@@ -351,34 +343,35 @@
                 container.classList.add('open');
                 isOpen = true;
                 
-                // Spawn Opening Hearts
                 for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
 
-                // STAGE 2: After letter slides out (0.6s), Center it
+                // STAGE 2: Center Letter
                 setTimeout(() => {
                     letter.classList.add('full-mode');
-                    canRunaway = true; // Enable buttons now
+                    canRunaway = true; 
                 }, 800);
             }
         }
 
-        // 2. RUNAWAY NO BUTTON
+        // 2. RUNAWAY NO BUTTON (FIXED)
         function runAway(e) {
             e.stopPropagation();
             if (!canRunaway) return;
             
-            const btnW = noBtn.offsetWidth;
-            const btnH = noBtn.offsetHeight;
-            const maxX = window.innerWidth - btnW - 20;
-            const maxY = window.innerHeight - btnH - 20;
+            // Fixed positioning logic
+            noBtn.style.position = 'fixed'; // Switch to fixed on first hover
             
-            const newX = Math.random() * maxX;
-            const newY = Math.random() * maxY;
+            // Safe boundaries (80px padding from edges)
+            const padding = 80;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            const newX = Math.random() * (maxX - padding) + padding;
+            const newY = Math.random() * (maxY - padding) + padding;
 
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = Math.max(10, newX) + 'px'; 
-            noBtn.style.top = Math.max(10, newY) + 'px'; 
-            noBtn.style.zIndex = '1000';
+            noBtn.style.left = newX + 'px'; 
+            noBtn.style.top = newY + 'px'; 
+            noBtn.style.zIndex = '2000'; // Higher than letter
             
             // Grow Yes Button
             const yesBtn = document.getElementById('yesBtn');
@@ -392,7 +385,7 @@
             e.stopPropagation();
             document.body.style.backgroundColor = "#fce4ec"; 
             container.style.display = 'none';
-            letter.style.display = 'none'; // Hide the fixed letter
+            letter.style.display = 'none'; 
             
             const celeb = document.getElementById('celebration');
             celeb.style.display = 'block';
@@ -411,7 +404,7 @@
         ];
         while (myReasons.length < 100) { myReasons.push("Reason #" + (myReasons.length + 1) + ": I love you!"); }
         
-        // PASTEL COLORS
+        // Note colors
         const noteColors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#FDFD96', '#FFFACD', '#C3B1E1', '#DCD0FF'];
 
         function generateReasons() {
@@ -466,33 +459,65 @@
 
             const flowers = [];
 
-            function drawComplexPetal(x, y, w, h, color, angle, noise = 0) {
+            // --- PALETTES ---
+            // 1. Roses: Red, Pink, White, Peach
+            const ROSE_PALETTES = [
+                { base: '#990000', mid: '#cc0000', tip: '#ff0000' }, // Classic Red
+                { base: '#881111', mid: '#aa2222', tip: '#d00000' }, // Dark Red
+                { base: '#c9184a', mid: '#ff4d6d', tip: '#ff758f' }, // Hot Pink
+                { base: '#ffcccc', mid: '#ffe5ec', tip: '#ffffff' }, // White/Pink
+                { base: '#ff9f1c', mid: '#ffbf69', tip: '#ffffff' }, // Peach
+            ];
+
+            // 2. Carnations: White with Pink/Fuchsia/Purple tips
+            const CARNATION_PALETTES = [
+                { base: '#f8f9fa', mid: '#ffe5ec', tip: '#ff0a54' }, // White w/ Fuchsia Tip
+                { base: '#f8f9fa', mid: '#e2eafc', tip: '#3a86ff' }, // White w/ Blue Tip
+                { base: '#f8f9fa', mid: '#f3c4fb', tip: '#9d4edd' }, // White w/ Purple Tip
+                { base: '#fff0f3', mid: '#ffccd5', tip: '#ff477e' }, // Soft Pink
+            ];
+
+            // 3. Tulips: Gradients (Purple, Red/Yellow, Pink/White)
+            const TULIP_PALETTES = [
+                { base: '#7209b7', mid: '#b5179e', tip: '#f72585' }, // Purple Gradient
+                { base: '#d00000', mid: '#e85d04', tip: '#ffba08' }, // Sunset (Red->Yellow)
+                { base: '#e01e37', mid: '#da1e37', tip: '#ffffff' }, // Red w/ White Tip
+                { base: '#fb6f92', mid: '#ff8fab', tip: '#ffe5ec' }, // Pink Gradient
+            ];
+
+            function drawComplexPetal(x, y, w, h, palette, angle, noise = 0) {
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(angle);
                 ctx.beginPath();
                 
                 if (noise > 0) {
+                    // Carnation Ruffle Logic
                     ctx.moveTo(0, 0);
-                    for(let i=0; i<=h; i+=5) {
-                        let offset = Math.sin(i * 0.5) * noise;
-                        let petalWidthAtY = Math.sin((i/h) * Math.PI) * w;
-                        ctx.lineTo(-petalWidthAtY/2 + offset, -i);
+                    // Ruffle Left
+                    for(let i=0; i<=h; i+=3) {
+                        let offset = Math.sin(i * 0.8) * noise; // High freq noise
+                        let width = Math.sin((i/h) * Math.PI) * w;
+                        ctx.lineTo(-width/2 + offset, -i);
                     }
-                    for(let i=h; i>=0; i-=5) {
-                        let offset = Math.sin(i * 0.5) * noise;
-                        let petalWidthAtY = Math.sin((i/h) * Math.PI) * w;
-                        ctx.lineTo(petalWidthAtY/2 + offset, -i);
+                    // Ruffle Right
+                    for(let i=h; i>=0; i-=3) {
+                        let offset = Math.sin(i * 0.8) * noise;
+                        let width = Math.sin((i/h) * Math.PI) * w;
+                        ctx.lineTo(width/2 + offset, -i);
                     }
                 } else {
+                    // Smooth Curve
                     ctx.moveTo(0, 0);
                     ctx.bezierCurveTo(-w, -h/2, -w/2, -h, 0, -h); 
                     ctx.bezierCurveTo(w/2, -h, w, -h/2, 0, 0);    
                 }
                 
+                // Advanced Gradient
                 let grad = ctx.createLinearGradient(0, 0, 0, -h);
-                grad.addColorStop(0, darken(color, 20));
-                grad.addColorStop(1, color);
+                grad.addColorStop(0, palette.base);
+                grad.addColorStop(0.5, palette.mid);
+                grad.addColorStop(1, palette.tip);
                 
                 ctx.fillStyle = grad;
                 ctx.fill();
@@ -500,16 +525,21 @@
             }
 
             class Flower {
-                constructor(x, y, type, colorHex) {
+                constructor(x, y, type) {
                     this.x = x; this.y = y; this.originalY = y;
                     this.height = 0; 
                     this.maxHeight = Math.random() * 150 + 200;
                     this.growSpeed = Math.random() * 2 + 1;
                     this.type = type; 
-                    this.colorHex = colorHex;
+                    
+                    // Assign Palette based on Type
+                    if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
+                    else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
+                    else this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
+
                     this.bloomed = false; 
                     this.bloomSize = 0; 
-                    this.maxBloom = Math.random() * 0.8 + 0.4;
+                    this.maxBloom = Math.random() * 0.5 + 0.6; // Scale
                 }
 
                 draw() {
@@ -519,23 +549,29 @@
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
-                    if(this.height > 60) { drawComplexPetal(this.x, this.originalY - 50, 20, 15, '#40916c', -1.5, 0); }
-                    if(this.height > 100) { drawComplexPetal(this.x, this.originalY - 90, 20, 15, '#40916c', 1.5, 0); }
+                    // Leaves
+                    if(this.height > 60) { drawComplexPetal(this.x, this.originalY - 50, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, -1.5, 0); }
+                    if(this.height > 100) { drawComplexPetal(this.x, this.originalY - 90, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, 1.5, 0); }
 
                     if (this.bloomed) {
-                        const headX = this.x; const headY = this.originalY - this.height; const s = this.bloomSize * 30;
+                        const headX = this.x; const headY = this.originalY - this.height; const s = this.bloomSize * 35;
 
                         if (this.type === 'rose') {
-                            for(let i=0; i<8; i++) { drawComplexPetal(headX, headY, s, s, this.colorHex, (i * (Math.PI*2)/8), 0); }
-                            for(let i=0; i<6; i++) { drawComplexPetal(headX, headY, s*0.7, s*0.8, darken(this.colorHex, 10), (i * (Math.PI*2)/6) + 0.5, 0); }
-                            for(let i=0; i<5; i++) { drawComplexPetal(headX, headY, s*0.4, s*0.5, darken(this.colorHex, 20), (i * (Math.PI*2)/5), 0); }
+                            // Tight Spiral
+                            for(let i=0; i<8; i++) { drawComplexPetal(headX, headY, s, s, this.palette, (i * (Math.PI*2)/8), 0); }
+                            for(let i=0; i<6; i++) { drawComplexPetal(headX, headY, s*0.7, s*0.8, this.palette, (i * (Math.PI*2)/6) + 0.5, 0); }
+                            for(let i=0; i<4; i++) { drawComplexPetal(headX, headY, s*0.4, s*0.5, this.palette, (i * (Math.PI*2)/4), 0); }
+
                         } else if (this.type === 'carnation') {
-                            for(let i=0; i<12; i++) { drawComplexPetal(headX, headY, s*0.8, s*1.2, this.colorHex, (i * (Math.PI*2)/12), 4); }
-                            for(let i=0; i<8; i++) { drawComplexPetal(headX, headY, s*0.6, s*0.9, lighten(this.colorHex, 10), (i * (Math.PI*2)/8) + 0.2, 4); }
+                            // Ruffled Fan - White base with colored tips logic is handled by gradient
+                            for(let i=0; i<10; i++) { drawComplexPetal(headX, headY, s*0.9, s*1.3, this.palette, (i * (Math.PI*2)/10), 3); }
+                            for(let i=0; i<7; i++) { drawComplexPetal(headX, headY, s*0.7, s*1.0, this.palette, (i * (Math.PI*2)/7) + 0.3, 3); }
+
                         } else if (this.type === 'tulip') {
-                            drawComplexPetal(headX, headY, s, s*1.5, darken(this.colorHex, 10), -0.3, 0);
-                            drawComplexPetal(headX, headY, s, s*1.5, darken(this.colorHex, 10), 0.3, 0);
-                            drawComplexPetal(headX, headY, s*1.2, s*1.6, this.colorHex, 0, 0);
+                            // Cup Shape
+                            drawComplexPetal(headX, headY, s, s*1.5, this.palette, -0.35, 0);
+                            drawComplexPetal(headX, headY, s, s*1.5, this.palette, 0.35, 0);
+                            drawComplexPetal(headX, headY, s*1.1, s*1.6, this.palette, 0, 0);
                         }
                     }
                 }
@@ -547,21 +583,6 @@
                 }
             }
 
-            function darken(col, amt) {
-                let num = parseInt(col.slice(1), 16);
-                let r = (num >> 16) - amt; let g = ((num >> 8) & 0x00FF) - amt; let b = (num & 0x0000FF) - amt;
-                if(r<0) r=0; if(g<0) g=0; if(b<0) b=0;
-                return "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6,0);
-            }
-            function lighten(col, amt) {
-                let num = parseInt(col.slice(1), 16);
-                let r = (num >> 16) + amt; let g = ((num >> 8) & 0x00FF) + amt; let b = (num & 0x0000FF) + amt;
-                if(r>255) r=255; if(g>255) g=255; if(b>255) b=255;
-                return "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6,0);
-            }
-
-            // PASTEL COLORS
-            const colors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#FDFD96', '#FFFACD', '#C3B1E1', '#DCD0FF'];
             const types = ['rose', 'tulip', 'carnation'];
 
             // DENSE: Spacing 15px
@@ -570,8 +591,7 @@
                 flowers.push(new Flower(
                     i + Math.random()*10, 
                     canvas.height + depthY, 
-                    types[Math.floor(Math.random()*types.length)], 
-                    colors[Math.floor(Math.random()*colors.length)]
+                    types[Math.floor(Math.random()*types.length)]
                 ));
             }
 
