@@ -7,8 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Caveat:wght@400;700&family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* A slightly darker pink background helps the flowers blend better */
-            --bg-color: #fce4ec; 
+            --bg-color: #fce4ec; /* Light pink is crucial for multiply blend mode */
             --env-color: #ff5c8a;      
             --env-dark: #d6336c;       
             --env-inside: #880e4f;     
@@ -58,8 +57,8 @@
             height: 90%; 
             background-color: var(--paper-color);
             border: 1px solid var(--paper-line);
-            z-index: 2; /* Sits BETWEEN Back and Flaps */
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), height 0.8s ease, z-index 0.1s;
+            z-index: 2; /* Inside Pocket */
+            transition: transform 0.8s ease-in-out, height 0.8s ease-in-out, z-index 0.1s;
             padding: 25px; 
             box-sizing: border-box;
             display: flex;
@@ -86,10 +85,10 @@
 
         .letter-content {
             opacity: 0;
-            transition: opacity 0.5s ease 0.6s;
+            transition: opacity 0.5s ease 0.4s;
         }
 
-        /* 3. FRONT FLAPS (The Pocket) */
+        /* 3. FRONT FLAPS (Pocket) */
         .flap {
             position: absolute;
             z-index: 3; /* COVERS LETTER */
@@ -136,8 +135,8 @@
         }
 
         .open .letter {
-            transform: translateY(-220px); 
-            height: 480px; 
+            transform: translateY(-200px); 
+            height: 450px; 
             z-index: 5; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
@@ -170,7 +169,7 @@
             background-color: #e0e0e0; 
             color: #333; 
             position: relative; 
-            transition: top 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), left 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: top 0.4s ease, left 0.4s ease; 
         }
 
         #yesBtn:hover { transform: scale(1.1); }
@@ -182,8 +181,7 @@
             height: 100vh;
             position: fixed;
             top: 0; left: 0;
-            /* Background matches CSS blend mode */
-            background-color: var(--bg-color); 
+            background-color: var(--bg-color);
             z-index: 100;
             overflow-y: auto;
             text-align: center;
@@ -200,7 +198,7 @@
             z-index: 10;
         }
 
-        /* CANVAS FOR FLOWERS */
+        /* THE GARDEN CONTAINER */
         #garden {
             position: fixed;
             bottom: 0;
@@ -208,7 +206,61 @@
             width: 100%;
             height: 100%;
             z-index: 1; 
-            pointer-events: none;
+            pointer-events: none; /* Let clicks pass through to notes */
+        }
+
+        /* FLOWER STYLES */
+        .flower {
+            position: absolute;
+            bottom: -10px; /* Start slightly below screen */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-origin: bottom center;
+            z-index: 2;
+        }
+
+        .stem {
+            width: 6px;
+            background: linear-gradient(to right, #2d6a4f, #40916c);
+            border-radius: 10px;
+            height: 0; /* Starts at 0, grows via JS */
+            transition: height 1.5s ease-out;
+            position: relative;
+        }
+
+        /* Leaf on stem */
+        .stem::after {
+            content: '';
+            position: absolute;
+            top: 40%;
+            left: 100%;
+            width: 25px;
+            height: 12px;
+            background: #40916c;
+            border-radius: 50% 0 50% 0;
+            transform: rotate(-20deg);
+        }
+
+        .flower-head {
+            width: 100px; /* Bigger flowers */
+            height: 100px;
+            object-fit: contain;
+            /* MAGIC TRICK: Hides white background of JPGs */
+            mix-blend-mode: multiply; 
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: -10px; /* Connect to stem */
+        }
+
+        .flower.bloomed .stem {
+            /* Height set by JS */
+        }
+
+        .flower.bloomed .flower-head {
+            opacity: 1;
+            transform: scale(1);
         }
 
         /* NOTES GRID */
@@ -294,7 +346,9 @@
 
     <div id="celebration">
         <h1>YAY! I Love You! ❤️</h1>
-        <canvas id="garden"></canvas>
+        
+        <div id="garden"></div>
+        
         <div style="height: 50px;"></div>
         <h2 style="font-family: 'Poppins'; color: #555; background: rgba(255,255,255,0.7); display:inline-block; padding: 5px 15px; border-radius: 10px; position: relative; z-index: 5;">100 Reasons Why:</h2>
         <div class="reasons-grid" id="reasonsGrid"></div>
@@ -335,7 +389,7 @@
         // 3. CELEBRATION
         function celebrate(e) {
             e.stopPropagation();
-            document.body.style.backgroundColor = "#fce4ec"; // Ensure bg match
+            document.body.style.backgroundColor = "#fce4ec"; 
             envelope.style.display = 'none';
             noBtn.style.display = 'none';
             
@@ -344,8 +398,8 @@
             
             generateReasons();
             
-            // PRELOAD REAL IMAGES
-            preloadFlowers();
+            // Start The Garden Engine (CSS/DOM Version)
+            setTimeout(plantGarden, 200);
             
             setInterval(() => spawnHeart(false), 400); 
         }
@@ -397,128 +451,65 @@
         }
 
         // ==========================================
-        //  REAL FLOWER ENGINE (With Mix-Blend-Mode Trick)
+        //  RELIABLE DOM-BASED FLOWER ENGINE
         // ==========================================
         
-        // These are REAL photos on white backgrounds.
-        // We use CSS 'multiply' blend mode to make the white disappear.
-        const flowerAssets = {
-            rose: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Rose_on_white_background.jpg/640px-Rose_on_white_background.jpg", 
-            tulip: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Tulip_St_Pancras.jpg/437px-Tulip_St_Pancras.jpg", 
-            carnation: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Carnation_white_background.jpg/640px-Carnation_white_background.jpg" 
-        };
+        // High quality images from Unsplash (no CORS issues for <img> tags)
+        const flowerImages = [
+            "https://images.unsplash.com/photo-1550592607-b3e34b4c7329?w=300", // Rose
+            "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=300", // Tulip
+            "https://images.unsplash.com/photo-1563241527-3af6d06976b7?w=300", // Carnation/Pink
+            "https://images.unsplash.com/photo-1572454591674-2739f30d8c40?w=300", // Red Rose
+            "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=300"  // Sunflower/Yellow
+        ];
 
-        const loadedImages = {};
-
-        function preloadFlowers() {
-            let loadedCount = 0;
-            const types = Object.keys(flowerAssets);
+        function plantGarden() {
+            const garden = document.getElementById('garden');
+            const gardenWidth = window.innerWidth;
             
-            types.forEach(type => {
-                const img = new Image();
-                img.crossOrigin = "Anonymous"; // Important for canvas
-                img.src = flowerAssets[type];
-                img.onload = () => {
-                    loadedImages[type] = img;
-                    loadedCount++;
-                    if(loadedCount === types.length) {
-                        initGarden();
-                    }
-                };
-            });
-        }
+            // Create a flower every 60-80 pixels
+            const spacing = 70;
+            const count = Math.floor(gardenWidth / spacing);
 
-        function initGarden() {
-            const canvas = document.getElementById('garden');
-            const ctx = canvas.getContext('2d');
-            
-            // Activate Blend Mode globally for the canvas
-            // This makes white pixels transparent!
-            ctx.globalCompositeOperation = 'multiply';
-
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            const flowers = [];
-            
-            class Flower {
-                constructor(x, y, type) {
-                    this.x = x; this.y = y; this.originalY = y;
-                    this.height = 0; 
-                    this.maxHeight = Math.random() * 200 + 200; // Stem height
-                    this.growSpeed = Math.random() * 2 + 1;
-                    this.type = type; 
-                    this.bloomed = false; 
-                    this.bloomScale = 0; 
-                    this.maxBloomScale = Math.random() * 0.2 + 0.2; // Scale down the huge photos
-                }
-
-                draw() {
-                    // Draw Green Stem (Normal mode)
-                    ctx.globalCompositeOperation = 'source-over'; 
-                    ctx.beginPath();
-                    ctx.moveTo(this.x, this.originalY);
-                    const curve = Math.sin(this.height * 0.05) * 5;
-                    ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
-                    ctx.strokeStyle = '#386641'; 
-                    ctx.lineWidth = 6; 
-                    ctx.stroke();
-
-                    // Draw Leaves
-                    if(this.height > 60) {
-                        ctx.beginPath();
-                        ctx.fillStyle = '#6a994e';
-                        ctx.ellipse(this.x - 10, this.originalY - 40, 15, 6, -0.6, 0, Math.PI*2);
-                        ctx.fill();
-                    }
-
-                    // Draw Flower Head (Multiply mode for transparency)
-                    if (this.bloomed) {
-                        ctx.globalCompositeOperation = 'multiply'; 
-                        const img = loadedImages[this.type];
-                        if (img) {
-                            const width = img.width * this.bloomScale;
-                            const height = img.height * this.bloomScale;
-                            const headX = this.x - width/2;
-                            const headY = (this.originalY - this.height) - height/1.2;
-                            
-                            ctx.drawImage(img, headX, headY, width, height);
-                        }
-                    }
-                }
-
-                update() {
-                    if (this.height < this.maxHeight) { this.height += this.growSpeed; } else { this.bloomed = true; }
-                    if (this.bloomed && this.bloomScale < this.maxBloomScale) { this.bloomScale += 0.005; }
-                    this.draw();
-                }
-            }
-
-            const types = ['rose', 'tulip', 'carnation'];
-
-            // Plant flowers across screen
-            for(let i=0; i<window.innerWidth; i+=70) {
-                const depthY = Math.random() * 50; 
-                flowers.push(new Flower(
-                    i + Math.random()*20, 
-                    canvas.height + depthY, 
-                    types[Math.floor(Math.random()*types.length)]
-                ));
-            }
-
-            function animate() {
-                // Clear canvas but keep blend mode in mind
-                ctx.globalCompositeOperation = 'source-over';
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for(let i = 0; i < count; i++) {
+                // Create Flower Container
+                const flower = document.createElement('div');
+                flower.classList.add('flower');
                 
-                flowers.forEach(f => f.update());
-                requestAnimationFrame(animate);
+                // Random positioning
+                const leftPos = (i * spacing) + (Math.random() * 40 - 20);
+                flower.style.left = leftPos + 'px';
+
+                // Random depth (z-index and size)
+                const scale = Math.random() * 0.4 + 0.6; // 0.6 to 1.0
+                flower.style.transform = `scale(${scale})`;
+                flower.style.zIndex = Math.floor(scale * 10); // Bigger ones in front
+                
+                // Create Stem
+                const stem = document.createElement('div');
+                stem.classList.add('stem');
+                const targetHeight = Math.random() * 150 + 150; // 150-300px
+                stem.style.height = '0px'; // Start at 0
+                
+                // Create Flower Head
+                const img = document.createElement('img');
+                img.classList.add('flower-head');
+                img.src = flowerImages[Math.floor(Math.random() * flowerImages.length)];
+                
+                // Build DOM
+                flower.appendChild(img);
+                flower.appendChild(stem);
+                garden.appendChild(flower);
+
+                // Animate
+                setTimeout(() => {
+                    stem.style.height = targetHeight + 'px'; // Grow stem
+                }, i * 50 + 100);
+
+                setTimeout(() => {
+                    flower.classList.add('bloomed'); // Pop flower head
+                }, i * 50 + 1000); // Bloom after stem grows
             }
-            animate();
         }
     </script>
 </body>
