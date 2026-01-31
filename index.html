@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Vaishnavi ❤️</title>
 <style>
-/* Body & background */
 body {
   margin:0;
   background:#ffd6e0;
@@ -25,23 +24,24 @@ body {
   to { transform: translateY(-900px); opacity:0;}
 }
 
-/* Envelope wrapper for perspective */
+/* Envelope */
 .envelope-wrapper {
   margin-top:150px;
   perspective:1000px;
-}
-
-/* Envelope */
-.envelope {
   width:320px;
   height:220px;
-  margin:auto;
+  margin-left:auto;
+  margin-right:auto;
+}
+.envelope {
+  width:100%;
+  height:100%;
   position:relative;
   cursor:pointer;
   transform-style:preserve-3d;
 }
 
-/* Top flap */
+/* Flap */
 .flap {
   position:absolute;
   top:0; left:0;
@@ -86,7 +86,7 @@ body {
   box-shadow:0 10px 20px rgba(0,0,0,0.15);
 }
 
-/* Open state */
+/* Open envelope */
 .envelope.open .flap { transform: rotateX(-180deg); }
 .envelope.open .letter { opacity:1; transform:translateY(-20px); }
 
@@ -98,6 +98,7 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
+  display:none;
 }
 .paper {
   background:#fffaf0;
@@ -120,9 +121,10 @@ button {
 }
 .buttons { position:relative; height:120px; }
 
-/* Bouquet */
+/* Bouquet (realistic-ish) */
+#celebration { display:none; }
 .bouquet { display:flex; justify-content:center; margin:40px 0; }
-.flower { width:60px; height:120px; margin:0 20px; animation:sway 3s ease-in-out infinite; }
+.flower { width:60px; height:120px; margin:0 10px; animation:sway 3s ease-in-out infinite; }
 .tulip { background: radial-gradient(circle at top,#ff6f91 40%,transparent 41%), linear-gradient(#2d6a4f,#2d6a4f); background-size:100% 50%, 6px 80px; background-position:top center,bottom center; background-repeat:no-repeat; }
 .rose { background: radial-gradient(circle,#ff4d6d 35%,#c9184a 60%); border-radius:50%; }
 .carnation { background: radial-gradient(circle,#ffc8dd 40%,#ffafcc 70%); border-radius:50% 50% 40% 40%; }
@@ -147,8 +149,6 @@ button {
   animation: popIn 0.6s forwards;
 }
 @keyframes popIn { to { opacity:1; transform:translateY(0) rotate(var(--r)); } }
-.hidden { display:none; }
-
 </style>
 </head>
 <body>
@@ -165,7 +165,7 @@ button {
 </div>
 
 <!-- Expanded letter -->
-<div id="expanded-letter" class="hidden">
+<div id="expanded-letter">
   <div class="paper">
     <h1>Vaishnavi ❤️</h1>
     <p>
@@ -181,7 +181,7 @@ button {
 </div>
 
 <!-- YES / NO -->
-<div id="choice" class="hidden">
+<div id="choice" style="display:none;">
   <h1>Will you be my Valentine? 💘</h1>
   <div class="buttons">
     <button id="yesBtn" onclick="sayYes()">YES 💕</button>
@@ -190,7 +190,7 @@ button {
 </div>
 
 <!-- Celebration -->
-<div id="celebration" class="hidden">
+<div id="celebration">
   <h1>You said YES 😭💖</h1>
   <div class="bouquet">
     <div class="flower tulip"></div>
@@ -206,6 +206,7 @@ button {
 document.addEventListener("DOMContentLoaded",()=>{
   const envelope=document.getElementById("envelope");
   const letter=document.getElementById("letter");
+  const expandedLetter=document.getElementById("expanded-letter");
 
   envelope.addEventListener("click",()=>{
     envelope.classList.add("open");
@@ -214,15 +215,14 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   letter.addEventListener("click",(e)=>{
     e.stopPropagation();
-    document.querySelector(".envelope-wrapper").classList.add("hidden");
-    document.getElementById("expanded-letter").classList.remove("hidden");
+    expandedLetter.style.display="flex";
   });
 });
 
 let yesScale=1;
 function goToChoice(){
-  document.getElementById("expanded-letter").classList.add("hidden");
-  document.getElementById("choice").classList.remove("hidden");
+  document.getElementById("expanded-letter").style.display="none";
+  document.getElementById("choice").style.display="block";
 }
 
 const noBtn=document.getElementById("noBtn");
@@ -240,11 +240,12 @@ noBtn.addEventListener("mouseenter",moveNoButton);
 noBtn.addEventListener("mousemove",moveNoButton);
 
 function sayYes(){
-  document.getElementById("choice").classList.add("hidden");
-  document.getElementById("celebration").classList.remove("hidden");
+  document.getElementById("choice").style.display="none";
+  document.getElementById("celebration").style.display="block";
   showReasons();
 }
 
+// Floating hearts
 function startHearts(){
   setInterval(()=>{
     const heart=document.createElement("div");
@@ -256,6 +257,7 @@ function startHearts(){
   },300);
 }
 
+// 100 reasons
 function showReasons(){
   const container=document.getElementById("reasons");
   const baseReasons=[
@@ -275,8 +277,8 @@ function showReasons(){
   }
 }
 </script>
-
 </body>
 </html>
+
 
 
