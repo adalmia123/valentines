@@ -1,38 +1,64 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: 'Georgia', serif;
   background: linear-gradient(#ffdde1, #ee9ca7);
+  min-height: 100vh;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  overflow-x: hidden;
 }
 
 .hidden {
   display: none;
 }
 
-/* ✉️ Envelope */
-#envelope-container {
-  margin-top: 120px;
+/* ✉️ Envelope (adapted from MarianaBlue) */
+.envelope {
+  position: relative;
+  width: 300px;
+  height: 200px;
   cursor: pointer;
 }
 
-.envelope {
-  width: 300px;
-  height: 200px;
-  background: #f5c6cb;
-  margin: auto;
-  position: relative;
-  border-radius: 10px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-
-.flap {
-  position: absolute;
-  top: 0;
+.back {
+  background: #f3a6b8;
   width: 100%;
   height: 100%;
-  background: #e5989b;
-  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  position: absolute;
+}
+
+.front {
+  position: absolute;
+  border-right: 150px solid #f7b7c9;
+  border-top: 100px solid transparent;
+  border-bottom: 100px solid transparent;
+  left: 150px;
+}
+
+.front::before {
+  content: '';
+  position: absolute;
+  border-left: 150px solid #f7b7c9;
+  border-top: 100px solid transparent;
+  border-bottom: 100px solid transparent;
+  left: -300px;
+}
+
+.top {
+  position: absolute;
+  border-top: 100px solid #ee9ca7;
+  border-left: 150px solid transparent;
+  border-right: 150px solid transparent;
   transform-origin: top;
   transition: transform 1s;
 }
@@ -45,41 +71,50 @@ body {
   top: 20px;
   left: 20px;
   padding: 15px;
-  border-radius: 5px;
-  transform: translateY(40px);
+  border-radius: 6px;
+  transform: translateY(40px) scale(0.9);
+  transition: all 1s;
   opacity: 0;
-  transition: 1s;
 }
 
-.envelope.open .flap {
+/* OPEN STATE */
+.envelope.open .top {
   transform: rotateX(180deg);
 }
 
 .envelope.open .letter {
-  transform: translateY(-40px);
+  transform: translateY(-140px) scale(1.1);
   opacity: 1;
 }
 
-.question {
+.big-question {
   font-weight: bold;
-  margin-top: 15px;
+  font-size: 18px;
+  margin-top: 12px;
 }
 
 /* Buttons */
 .buttons {
   position: relative;
+  width: 260px;
   height: 120px;
+  margin-top: 20px;
 }
 
 button {
-  padding: 14px 30px;
+  padding: 14px 28px;
   font-size: 18px;
   border: none;
   border-radius: 30px;
-  cursor: pointer;
   background: #ff4d6d;
   color: white;
+  cursor: pointer;
   transition: 0.3s;
+}
+
+#yesBtn {
+  position: absolute;
+  left: 0;
 }
 
 #noBtn {
@@ -90,58 +125,37 @@ button {
 /* 🌷 Tulips */
 .bouquet {
   display: flex;
-  justify-content: center;
-  margin: 40px 0;
+  gap: 25px;
+  margin: 30px 0;
 }
 
 .tulip {
-  position: relative;
-  margin: 0 20px;
-  animation: sway 3s ease-in-out infinite;
-}
-
-.petal {
-  width: 40px;
+  width: 30px;
   height: 50px;
   background: #ff6f91;
   border-radius: 50% 50% 0 0;
+  position: relative;
 }
 
-.stem {
+.tulip::after {
+  content: '';
   width: 6px;
-  height: 80px;
+  height: 70px;
   background: #2d6a4f;
-  margin: auto;
-}
-
-.leaf {
-  width: 20px;
-  height: 40px;
-  background: #40916c;
   position: absolute;
-  top: 70px;
-  left: 10px;
-  border-radius: 50%;
-}
-
-@keyframes sway {
-  0%, 100% { transform: rotate(-2deg); }
-  50% { transform: rotate(2deg); }
+  top: 50px;
+  left: 12px;
 }
 
 /* 💕 Hearts */
 .heart {
   position: fixed;
   bottom: -20px;
-  font-size: 24px;
+  font-size: 22px;
   animation: float 6s linear infinite;
 }
 
 @keyframes float {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
   to {
     transform: translateY(-900px);
     opacity: 0;
@@ -150,17 +164,18 @@ button {
 
 /* Reasons */
 #reasons {
-  max-width: 700px;
-  margin: auto;
   list-style: none;
+  max-width: 600px;
+  padding: 0;
 }
 
 #reasons li {
   opacity: 0;
-  animation: fadeIn 0.6s forwards;
-  margin: 8px 0;
+  animation: fadeIn 0.5s forwards;
+  margin: 6px 0;
 }
 
 @keyframes fadeIn {
   to { opacity: 1; }
 }
+
