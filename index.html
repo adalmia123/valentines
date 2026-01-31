@@ -10,7 +10,7 @@
             --bg-color: #ffe6ea;
             --env-color: #ff5c8a;      
             --env-dark: #d6336c;       
-            --env-inside: #880e4f;     /* Very dark inside pocket */
+            --env-inside: #880e4f;     
             --paper-color: #fffbf0;    
             --paper-line: #e6d2b5;     
         }
@@ -38,27 +38,26 @@
 
         .envelope-wrapper:hover { transform: scale(1.02); }
 
-        /* 1. BACK PANEL (The Dark Inside) */
+        /* 1. BACK PANEL */
         .envelope-back {
             position: absolute;
             bottom: 0; left: 0;
             width: 100%; height: 100%;
             background-color: var(--env-inside);
             border-radius: 0 0 10px 10px;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.2); /* Shadow depth */
             z-index: 1; 
         }
 
-        /* 2. THE LETTER (Hidden Inside Pocket) */
+        /* 2. THE LETTER */
         .letter {
             position: absolute;
             bottom: 0; 
             left: 5%;
             width: 90%;
-            height: 90%; /* Tucked inside */
+            height: 90%; 
             background-color: var(--paper-color);
             border: 1px solid var(--paper-line);
-            z-index: 2; /* Sandwiched Layer */
+            z-index: 2; /* Inside Pocket */
             transition: transform 0.8s ease-in-out, height 0.8s ease-in-out, z-index 0.1s;
             padding: 25px; 
             box-sizing: border-box;
@@ -89,13 +88,12 @@
             transition: opacity 0.5s ease 0.4s;
         }
 
-        /* 3. FRONT FLAPS (The Pocket Walls) - THESE HIDE THE LETTER */
+        /* 3. FRONT FLAPS (Pocket) */
         .flap {
             position: absolute;
-            z-index: 3; /* ABOVE the letter */
+            z-index: 3; /* COVERS LETTER */
         }
 
-        /* Triangle Geometry Fixes */
         .flap.left {
             top: 0; left: 0;
             border-top: 130px solid transparent;
@@ -124,27 +122,23 @@
             width: 0; height: 0;
             border-left: 200px solid transparent;
             border-right: 200px solid transparent;
-            border-top: 140px solid var(--env-color); /* Matches side flaps */
+            border-top: 140px solid var(--env-color); 
             transform-origin: top;
             transition: transform 0.6s ease-in-out 0s, z-index 0.2s;
-            z-index: 4; /* Topmost */
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+            z-index: 4; 
         }
 
         /* --- ANIMATION STATES --- */
-        
-        /* Step 1: Flip Lid */
         .open .flap.top {
             transform: rotateX(180deg);
-            z-index: 0; /* Send to back */
+            z-index: 0; 
         }
 
-        /* Step 2: Slide Letter Up & Over */
         .open .letter {
-            transform: translateY(-200px); /* Moves straight up */
-            height: 420px; /* Grows taller */
-            z-index: 5; /* Moves in front of flaps */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(-200px); 
+            height: 450px; 
+            z-index: 5; /* Moves to front */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
         
         .open .letter-content { opacity: 1; }
@@ -277,29 +271,23 @@
 <body>
 
     <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
-        
         <div class="envelope-back"></div>
-        
         <div class="letter">
             <div class="letter-content">
                 <h2>My Dearest,</h2>
                 <p>I have a question...</p>
                 <p><strong>Will you be my Valentine?</strong></p>
                 <p style="font-size: 0.9rem; margin-top: 15px; color: #888;">(I promise to buy you flowers!)</p>
-                
                 <div class="btn-group">
                     <button id="yesBtn" onclick="celebrate(event)">YES!</button>
                     <button id="noBtn" onmouseover="runAway(event)">No</button>
                 </div>
             </div>
         </div>
-
         <div class="flap left"></div>
         <div class="flap right"></div>
         <div class="flap bottom"></div>
-
         <div class="flap top"></div>
-
     </div>
 
     <div id="celebration">
@@ -316,44 +304,26 @@
         const envelope = document.getElementById('envelopeWrapper');
         const noBtn = document.getElementById('noBtn');
 
-        // 1. OPEN ENVELOPE LOGIC
+        // 1. OPEN ENVELOPE
         function openEnvelope() {
             if (!isOpen) {
                 envelope.classList.add('open');
                 isOpen = true;
-                
-                // Spawn Hearts
-                for(let i=0; i<15; i++){
-                    setTimeout(() => spawnHeart(true), i * 150);
-                }
-
-                // Enable button runaway after letter is out
-                setTimeout(() => {
-                    canRunaway = true;
-                }, 800);
+                for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
+                setTimeout(() => { canRunaway = true; }, 800);
             }
         }
 
-        // 2. SMOOTH RUNAWAY BUTTON
+        // 2. RUNAWAY NO BUTTON
         function runAway(e) {
             e.stopPropagation();
             if (!canRunaway) return;
-
-            // Viewport dimensions
             const maxX = window.innerWidth - noBtn.offsetWidth - 50;
             const maxY = window.innerHeight - noBtn.offsetHeight - 50;
-            
-            // Generate random coordinates
-            const newX = Math.random() * maxX;
-            const newY = Math.random() * maxY;
-
-            // Apply fixed position with CSS transition handling the smooth glide
             noBtn.style.position = 'fixed';
-            noBtn.style.left = Math.max(20, newX) + 'px';
-            noBtn.style.top = Math.max(20, newY) + 'px';
+            noBtn.style.left = Math.max(20, Math.random() * maxX) + 'px';
+            noBtn.style.top = Math.max(20, Math.random() * maxY) + 'px';
             noBtn.style.zIndex = '1000';
-
-            // Grow YES button
             const yesBtn = document.getElementById('yesBtn');
             let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
             yesBtn.style.fontSize = (currentSize + 2) + 'px';
@@ -363,8 +333,6 @@
         // 3. CELEBRATION
         function celebrate(e) {
             e.stopPropagation();
-            
-            // Hide Envelope UI
             document.body.style.backgroundColor = "#fff0f3";
             envelope.style.display = 'none';
             noBtn.style.display = 'none';
@@ -374,10 +342,9 @@
             
             generateReasons();
             
-            // Start flowers (Garden)
-            setTimeout(initGarden, 100); 
+            // Preload flower images then start garden
+            preloadFlowers();
             
-            // Start rain
             setInterval(() => spawnHeart(false), 400); 
         }
 
@@ -389,7 +356,6 @@
             "Your laugh", "The way you dance", "Your voice"
         ];
         while (myReasons.length < 100) { myReasons.push("Reason #" + (myReasons.length + 1) + ": I love you!"); }
-
         const noteColors = ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff', '#fffffc'];
 
         function generateReasons() {
@@ -429,13 +395,39 @@
         }
 
         // ==========================================
-        //  BIGGER FLOWER ENGINE
+        //  IMAGE-BASED FLOWER ENGINE
         // ==========================================
+        
+        // Asset URLs (High Quality Transparent PNGs)
+        const flowerAssets = {
+            rose: "https://cdn-icons-png.flaticon.com/512/7380/7380646.png", // Realistic Vector Rose
+            tulip: "https://cdn-icons-png.flaticon.com/512/5985/5985859.png", // Realistic Vector Tulip
+            carnation: "https://cdn-icons-png.flaticon.com/512/3028/3028634.png" // Realistic Vector Carnation
+        };
+
+        const loadedImages = {};
+
+        function preloadFlowers() {
+            let loadedCount = 0;
+            const types = Object.keys(flowerAssets);
+            
+            types.forEach(type => {
+                const img = new Image();
+                img.src = flowerAssets[type];
+                img.onload = () => {
+                    loadedImages[type] = img;
+                    loadedCount++;
+                    if(loadedCount === types.length) {
+                        initGarden();
+                    }
+                };
+            });
+        }
+
         function initGarden() {
             const canvas = document.getElementById('garden');
             const ctx = canvas.getContext('2d');
             
-            // Set canvas to full window size
             function resizeCanvas() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -446,122 +438,71 @@
             const flowers = [];
             
             class Flower {
-                constructor(x, y, type, colorHex) {
+                constructor(x, y, type) {
                     this.x = x; this.y = y; this.originalY = y;
                     this.height = 0; 
-                    this.maxHeight = Math.random() * 200 + 300; // MUCH TALLER (300-500px)
-                    this.growSpeed = Math.random() * 2 + 1;
+                    this.maxHeight = Math.random() * 200 + 200; // Tall stems
+                    this.growSpeed = Math.random() * 1.5 + 0.5;
                     this.type = type; 
-                    this.colorHex = colorHex;
                     this.bloomed = false; 
-                    this.bloomSize = 0; 
-                    this.maxBloom = Math.random() * 40 + 50; // MUCH BIGGER BLOOM (50-90px radius)
+                    this.bloomScale = 0; 
+                    this.maxBloomScale = Math.random() * 0.4 + 0.3; // Scale of the image (0.3 to 0.7)
                 }
 
                 draw() {
-                    // 1. Draw Stem (Thicker)
+                    // Draw Green Stem
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.originalY);
+                    // Add slight curve to stem for realism
                     const curve = Math.sin(this.height * 0.05) * 5;
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
-                    ctx.strokeStyle = '#2d6a4f'; 
-                    ctx.lineWidth = 6; // Thicker stem
+                    ctx.strokeStyle = '#386641'; 
+                    ctx.lineWidth = 4; 
                     ctx.stroke();
 
-                    // 2. Draw Leaves (Bigger)
-                    if(this.height > 100) {
+                    // Draw Leaves
+                    if(this.height > 60) {
                         ctx.beginPath();
-                        ctx.fillStyle = '#40916c';
-                        ctx.ellipse(this.x - 15, this.originalY - 70, 30, 10, -0.5, 0, Math.PI*2);
+                        ctx.fillStyle = '#6a994e';
+                        ctx.ellipse(this.x - 10, this.originalY - 40, 15, 6, -0.6, 0, Math.PI*2);
+                        ctx.fill();
+                    }
+                    if(this.height > 120) {
+                        ctx.beginPath();
+                        ctx.fillStyle = '#6a994e';
+                        ctx.ellipse(this.x + 10, this.originalY - 90, 15, 6, 0.6, 0, Math.PI*2);
                         ctx.fill();
                     }
 
-                    // 3. Draw Bloom
+                    // Draw Flower Head Image
                     if (this.bloomed) {
-                        const headX = this.x;
-                        const headY = this.originalY - this.height;
-
-                        if (this.type === 'rose') {
-                            this.drawRose(ctx, headX, headY, this.bloomSize, this.colorHex);
-                        } else if (this.type === 'tulip') {
-                            this.drawTulip(ctx, headX, headY, this.bloomSize, this.colorHex);
-                        } else {
-                            this.drawCarnation(ctx, headX, headY, this.bloomSize, this.colorHex);
+                        const img = loadedImages[this.type];
+                        if (img) {
+                            const size = 150 * this.bloomScale; // Base size 150px * scale
+                            const headX = this.x - size/2;
+                            const headY = (this.originalY - this.height) - size/1.5;
+                            
+                            ctx.drawImage(img, headX, headY, size, size);
                         }
                     }
                 }
 
-                // Helper: Draw Rose
-                drawRose(ctx, x, y, size, color) {
-                    const grad = ctx.createRadialGradient(x, y, 0, x, y, size);
-                    grad.addColorStop(0, '#fff'); 
-                    grad.addColorStop(0.3, color);
-                    grad.addColorStop(1, '#880e4f'); 
-
-                    ctx.fillStyle = grad;
-                    for (let i = 0; i < 5; i++) {
-                        ctx.beginPath();
-                        ctx.arc(x, y, size - (i*5), 0, Math.PI * 2);
-                        ctx.fill();
-                        ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-                        ctx.stroke();
-                    }
-                }
-
-                // Helper: Draw Tulip
-                drawTulip(ctx, x, y, size, color) {
-                    const grad = ctx.createLinearGradient(x, y, x, y - size);
-                    grad.addColorStop(0, '#2d6a4f'); 
-                    grad.addColorStop(0.2, color);
-                    grad.addColorStop(1, '#ffc2d1'); 
-
-                    ctx.fillStyle = grad;
-                    
-                    // Center
-                    ctx.beginPath();
-                    ctx.ellipse(x, y - size/2, size/1.5, size, 0, 0, Math.PI*2);
-                    ctx.fill();
-
-                    // Sides
-                    ctx.beginPath();
-                    ctx.ellipse(x - size/2, y - size/2, size/2, size*0.8, -0.2, 0, Math.PI*2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.ellipse(x + size/2, y - size/2, size/2, size*0.8, 0.2, 0, Math.PI*2);
-                    ctx.fill();
-                }
-
-                // Helper: Draw Carnation
-                drawCarnation(ctx, x, y, size, color) {
-                    ctx.fillStyle = color;
-                    ctx.beginPath();
-                    for(let i=0; i<Math.PI*2; i+=0.1) {
-                        let r = size + Math.random()*8; 
-                        ctx.lineTo(x + Math.cos(i)*r, y + Math.sin(i)*r);
-                    }
-                    ctx.fill();
-                }
-
                 update() {
                     if (this.height < this.maxHeight) { this.height += this.growSpeed; } else { this.bloomed = true; }
-                    if (this.bloomed && this.bloomSize < this.maxBloom) { this.bloomSize += 0.5; }
+                    if (this.bloomed && this.bloomScale < this.maxBloomScale) { this.bloomScale += 0.01; }
                     this.draw();
                 }
             }
 
-            const colors = ['#e63946', '#ff0a54', '#ff477e', '#ff7096', '#9d4edd', '#fb8500'];
             const types = ['rose', 'tulip', 'carnation'];
 
-            // Less flowers, but bigger and spread out
-            // Calculate how many fit based on screen width
-            const spacing = 80; 
-            for(let i=0; i<window.innerWidth; i+=spacing) {
-                const depthY = Math.random() * 80; 
+            // Plant flowers
+            for(let i=0; i<window.innerWidth; i+=60) {
+                const depthY = Math.random() * 50; 
                 flowers.push(new Flower(
-                    i + Math.random()*40, 
+                    i + Math.random()*20, 
                     canvas.height + depthY, 
-                    types[Math.floor(Math.random()*types.length)], 
-                    colors[Math.floor(Math.random()*colors.length)]
+                    types[Math.floor(Math.random()*types.length)]
                 ));
             }
 
