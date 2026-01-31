@@ -7,7 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Caveat:wght@400;700&family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #ffe6ea;
+            /* A slightly darker pink background helps the flowers blend better */
+            --bg-color: #fce4ec; 
             --env-color: #ff5c8a;      
             --env-dark: #d6336c;       
             --env-inside: #880e4f;     
@@ -57,8 +58,8 @@
             height: 90%; 
             background-color: var(--paper-color);
             border: 1px solid var(--paper-line);
-            z-index: 2; /* Inside Pocket */
-            transition: transform 0.8s ease-in-out, height 0.8s ease-in-out, z-index 0.1s;
+            z-index: 2; /* Sits BETWEEN Back and Flaps */
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), height 0.8s ease, z-index 0.1s;
             padding: 25px; 
             box-sizing: border-box;
             display: flex;
@@ -85,10 +86,10 @@
 
         .letter-content {
             opacity: 0;
-            transition: opacity 0.5s ease 0.4s;
+            transition: opacity 0.5s ease 0.6s;
         }
 
-        /* 3. FRONT FLAPS (Pocket) */
+        /* 3. FRONT FLAPS (The Pocket) */
         .flap {
             position: absolute;
             z-index: 3; /* COVERS LETTER */
@@ -135,9 +136,9 @@
         }
 
         .open .letter {
-            transform: translateY(-200px); 
-            height: 450px; 
-            z-index: 5; /* Moves to front */
+            transform: translateY(-220px); 
+            height: 480px; 
+            z-index: 5; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
         
@@ -169,7 +170,7 @@
             background-color: #e0e0e0; 
             color: #333; 
             position: relative; 
-            transition: top 0.4s ease, left 0.4s ease; 
+            transition: top 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), left 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         #yesBtn:hover { transform: scale(1.1); }
@@ -181,7 +182,8 @@
             height: 100vh;
             position: fixed;
             top: 0; left: 0;
-            background: linear-gradient(180deg, #fff0f3 0%, #ffe6ea 100%);
+            /* Background matches CSS blend mode */
+            background-color: var(--bg-color); 
             z-index: 100;
             overflow-y: auto;
             text-align: center;
@@ -333,7 +335,7 @@
         // 3. CELEBRATION
         function celebrate(e) {
             e.stopPropagation();
-            document.body.style.backgroundColor = "#fff0f3";
+            document.body.style.backgroundColor = "#fce4ec"; // Ensure bg match
             envelope.style.display = 'none';
             noBtn.style.display = 'none';
             
@@ -342,7 +344,7 @@
             
             generateReasons();
             
-            // Preload flower images then start garden
+            // PRELOAD REAL IMAGES
             preloadFlowers();
             
             setInterval(() => spawnHeart(false), 400); 
@@ -395,14 +397,15 @@
         }
 
         // ==========================================
-        //  IMAGE-BASED FLOWER ENGINE
+        //  REAL FLOWER ENGINE (With Mix-Blend-Mode Trick)
         // ==========================================
         
-        // Asset URLs (High Quality Transparent PNGs)
+        // These are REAL photos on white backgrounds.
+        // We use CSS 'multiply' blend mode to make the white disappear.
         const flowerAssets = {
-            rose: "https://cdn-icons-png.flaticon.com/512/7380/7380646.png", // Realistic Vector Rose
-            tulip: "https://cdn-icons-png.flaticon.com/512/5985/5985859.png", // Realistic Vector Tulip
-            carnation: "https://cdn-icons-png.flaticon.com/512/3028/3028634.png" // Realistic Vector Carnation
+            rose: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Rose_on_white_background.jpg/640px-Rose_on_white_background.jpg", 
+            tulip: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Tulip_St_Pancras.jpg/437px-Tulip_St_Pancras.jpg", 
+            carnation: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Carnation_white_background.jpg/640px-Carnation_white_background.jpg" 
         };
 
         const loadedImages = {};
@@ -413,6 +416,7 @@
             
             types.forEach(type => {
                 const img = new Image();
+                img.crossOrigin = "Anonymous"; // Important for canvas
                 img.src = flowerAssets[type];
                 img.onload = () => {
                     loadedImages[type] = img;
@@ -428,6 +432,10 @@
             const canvas = document.getElementById('garden');
             const ctx = canvas.getContext('2d');
             
+            // Activate Blend Mode globally for the canvas
+            // This makes white pixels transparent!
+            ctx.globalCompositeOperation = 'multiply';
+
             function resizeCanvas() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -441,23 +449,23 @@
                 constructor(x, y, type) {
                     this.x = x; this.y = y; this.originalY = y;
                     this.height = 0; 
-                    this.maxHeight = Math.random() * 200 + 200; // Tall stems
-                    this.growSpeed = Math.random() * 1.5 + 0.5;
+                    this.maxHeight = Math.random() * 200 + 200; // Stem height
+                    this.growSpeed = Math.random() * 2 + 1;
                     this.type = type; 
                     this.bloomed = false; 
                     this.bloomScale = 0; 
-                    this.maxBloomScale = Math.random() * 0.4 + 0.3; // Scale of the image (0.3 to 0.7)
+                    this.maxBloomScale = Math.random() * 0.2 + 0.2; // Scale down the huge photos
                 }
 
                 draw() {
-                    // Draw Green Stem
+                    // Draw Green Stem (Normal mode)
+                    ctx.globalCompositeOperation = 'source-over'; 
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.originalY);
-                    // Add slight curve to stem for realism
                     const curve = Math.sin(this.height * 0.05) * 5;
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#386641'; 
-                    ctx.lineWidth = 4; 
+                    ctx.lineWidth = 6; 
                     ctx.stroke();
 
                     // Draw Leaves
@@ -467,37 +475,33 @@
                         ctx.ellipse(this.x - 10, this.originalY - 40, 15, 6, -0.6, 0, Math.PI*2);
                         ctx.fill();
                     }
-                    if(this.height > 120) {
-                        ctx.beginPath();
-                        ctx.fillStyle = '#6a994e';
-                        ctx.ellipse(this.x + 10, this.originalY - 90, 15, 6, 0.6, 0, Math.PI*2);
-                        ctx.fill();
-                    }
 
-                    // Draw Flower Head Image
+                    // Draw Flower Head (Multiply mode for transparency)
                     if (this.bloomed) {
+                        ctx.globalCompositeOperation = 'multiply'; 
                         const img = loadedImages[this.type];
                         if (img) {
-                            const size = 150 * this.bloomScale; // Base size 150px * scale
-                            const headX = this.x - size/2;
-                            const headY = (this.originalY - this.height) - size/1.5;
+                            const width = img.width * this.bloomScale;
+                            const height = img.height * this.bloomScale;
+                            const headX = this.x - width/2;
+                            const headY = (this.originalY - this.height) - height/1.2;
                             
-                            ctx.drawImage(img, headX, headY, size, size);
+                            ctx.drawImage(img, headX, headY, width, height);
                         }
                     }
                 }
 
                 update() {
                     if (this.height < this.maxHeight) { this.height += this.growSpeed; } else { this.bloomed = true; }
-                    if (this.bloomed && this.bloomScale < this.maxBloomScale) { this.bloomScale += 0.01; }
+                    if (this.bloomed && this.bloomScale < this.maxBloomScale) { this.bloomScale += 0.005; }
                     this.draw();
                 }
             }
 
             const types = ['rose', 'tulip', 'carnation'];
 
-            // Plant flowers
-            for(let i=0; i<window.innerWidth; i+=60) {
+            // Plant flowers across screen
+            for(let i=0; i<window.innerWidth; i+=70) {
                 const depthY = Math.random() * 50; 
                 flowers.push(new Flower(
                     i + Math.random()*20, 
@@ -507,7 +511,10 @@
             }
 
             function animate() {
+                // Clear canvas but keep blend mode in mind
+                ctx.globalCompositeOperation = 'source-over';
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
                 flowers.forEach(f => f.update());
                 requestAnimationFrame(animate);
             }
