@@ -26,7 +26,7 @@
             overflow: hidden; 
         }
 
-        /* --- ENVELOPE STRUCTURE --- */
+        /* --- ENVELOPE CONTAINER --- */
         .container {
             position: relative;
             width: 400px;
@@ -56,7 +56,7 @@
         /* 2. THE LETTER (Sandwiched in middle) */
         .letter {
             position: absolute;
-            bottom: 0; /* Starts deep inside */
+            bottom: 0; 
             left: 5%;
             width: 90%;
             height: 90%;
@@ -79,7 +79,7 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 3; /* Covers the letter */
-            pointer-events: none; /* Let clicks pass to letter buttons later */
+            pointer-events: none; 
         }
 
         .flap {
@@ -118,7 +118,7 @@
             border-top: 140px solid var(--env-color); 
             transform-origin: top;
             transition: transform 0.6s ease-in-out;
-            z-index: 4; /* On top of everything initially */
+            z-index: 4; 
         }
 
         /* --- LETTER CONTENT STYLING --- */
@@ -147,14 +147,14 @@
         /* Step 1: Open Lid */
         .open .lid {
             transform: rotateX(180deg);
-            z-index: 0; /* Move behind back panel */
+            z-index: 0; 
         }
 
         /* Step 2: Slide Letter UP */
         .open .letter {
-            transform: translateY(-200px); /* Slide out */
-            height: 480px; /* Expand */
-            z-index: 5; /* Pop to front */
+            transform: translateY(-200px); 
+            height: 480px; 
+            z-index: 5; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
@@ -186,7 +186,7 @@
             background-color: #e0e0e0; 
             color: #333; 
             position: relative; 
-            transition: top 0.4s ease, left 0.4s ease; /* Smooth glide */
+            transition: top 0.4s ease, left 0.4s ease; 
         }
 
         #yesBtn:hover { transform: scale(1.1); }
@@ -290,7 +290,6 @@
     <div class="container" id="container" onclick="openEnvelope()">
         <div class="envelope">
             <div class="back"></div>
-            
             <div class="letter">
                 <div class="letter-content">
                     <h2>My Dearest,</h2>
@@ -303,13 +302,11 @@
                     </div>
                 </div>
             </div>
-
             <div class="pocket">
                 <div class="flap left"></div>
                 <div class="flap right"></div>
                 <div class="flap bottom"></div>
             </div>
-
             <div class="lid"></div>
         </div>
     </div>
@@ -368,7 +365,7 @@
             
             generateReasons();
             
-            // Start Canvas Garden
+            // START COMPLEX GARDEN
             setTimeout(initGarden, 100);
             
             setInterval(() => spawnHeart(false), 400); 
@@ -421,7 +418,7 @@
         }
 
         // ==========================================
-        //  CANVAS FLOWER ENGINE (Generative Arts)
+        //  COMPLEX PROCEDURAL FLOWER ENGINE
         // ==========================================
         function initGarden() {
             const canvas = document.getElementById('garden');
@@ -436,90 +433,161 @@
 
             const flowers = [];
 
-            // Helper: Draw a Petal
-            function drawPetal(x, y, w, h, color, angle) {
+            // --- MATH HELPER: Draw a single petal with curves ---
+            // x, y: position
+            // w, h: width/height of petal
+            // color: fill color
+            // angle: rotation
+            // noise: 0 for smooth, >0 for carnation ruffle
+            function drawComplexPetal(x, y, w, h, color, angle, noise = 0) {
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(angle);
                 ctx.beginPath();
-                ctx.moveTo(0, 0);
-                // Bezier for organic shape
-                ctx.bezierCurveTo(-w/2, -h/2, -w, -h, 0, -h);
-                ctx.bezierCurveTo(w, -h, w/2, -h/2, 0, 0);
-                ctx.fillStyle = color;
+                
+                // If noise > 0, we draw a jagged line
+                if (noise > 0) {
+                    ctx.moveTo(0, 0);
+                    // Ruffled Left Edge
+                    for(let i=0; i<=h; i+=5) {
+                        let offset = Math.sin(i * 0.5) * noise;
+                        // Quadratic approximation of petal shape + noise
+                        let petalWidthAtY = Math.sin((i/h) * Math.PI) * w;
+                        ctx.lineTo(-petalWidthAtY/2 + offset, -i);
+                    }
+                    // Ruffled Top
+                    // Ruffled Right Edge
+                    for(let i=h; i>=0; i-=5) {
+                        let offset = Math.sin(i * 0.5) * noise;
+                        let petalWidthAtY = Math.sin((i/h) * Math.PI) * w;
+                        ctx.lineTo(petalWidthAtY/2 + offset, -i);
+                    }
+                } else {
+                    // Smooth Petal (Rose/Tulip)
+                    ctx.moveTo(0, 0);
+                    ctx.bezierCurveTo(-w, -h/2, -w/2, -h, 0, -h); // Left curve
+                    ctx.bezierCurveTo(w/2, -h, w, -h/2, 0, 0);    // Right curve
+                }
+                
+                // Add Gradient for 3D look
+                // Radial gradient from bottom (darker) to top (lighter)
+                let grad = ctx.createLinearGradient(0, 0, 0, -h);
+                grad.addColorStop(0, darken(color, 20));
+                grad.addColorStop(1, color);
+                
+                ctx.fillStyle = grad;
                 ctx.fill();
+                // Optional: thin outline
+                ctx.strokeStyle = "rgba(0,0,0,0.1)";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
                 ctx.restore();
             }
 
             class Flower {
-                constructor(x, y, type, color) {
+                constructor(x, y, type, colorHex) {
                     this.x = x; this.y = y; this.originalY = y;
                     this.height = 0; 
-                    this.maxHeight = Math.random() * 150 + 200;
-                    this.growSpeed = Math.random() * 1 + 0.5;
-                    this.type = type; this.color = color;
-                    this.bloomed = false; this.bloomSize = 0; this.maxBloom = 1;
+                    this.maxHeight = Math.random() * 150 + 200; // Stem height
+                    this.growSpeed = Math.random() * 2 + 1;
+                    this.type = type; 
+                    this.colorHex = colorHex;
+                    this.bloomed = false; 
+                    this.bloomSize = 0; 
+                    this.maxBloom = Math.random() * 0.5 + 0.8; // Bloom scale
                 }
 
                 draw() {
-                    // Stem
+                    // 1. Draw Stem
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.originalY);
                     const curve = Math.sin(this.height * 0.05) * 5;
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
-                    // Leaves
+                    // 2. Draw Leaves
                     if(this.height > 60) {
-                        drawPetal(this.x, this.originalY - 50, 20, 10, '#40916c', -0.5);
+                        drawComplexPetal(this.x, this.originalY - 50, 20, 15, '#40916c', -1.5, 0); // Left leaf
+                    }
+                    if(this.height > 100) {
+                         drawComplexPetal(this.x, this.originalY - 90, 20, 15, '#40916c', 1.5, 0); // Right leaf
                     }
 
-                    // Bloom
+                    // 3. Draw Bloom
                     if (this.bloomed) {
-                        const headX = this.x; 
+                        const headX = this.x;
                         const headY = this.originalY - this.height;
-                        const s = this.bloomSize * 40; // Scale factor
+                        const s = this.bloomSize * 30; // Scale base
 
                         if (this.type === 'rose') {
-                            // Layered spirals
+                            // ROSE: Layers of spiral petals
+                            // Outer
+                            for(let i=0; i<8; i++) {
+                                drawComplexPetal(headX, headY, s, s, this.colorHex, (i * (Math.PI*2)/8), 0);
+                            }
+                            // Inner (darker, rotated)
                             for(let i=0; i<6; i++) {
-                                drawPetal(headX, headY, s, s, this.color, i);
-                                drawPetal(headX, headY, s*0.7, s*0.7, lighten(this.color, 20), i + 0.5);
+                                drawComplexPetal(headX, headY, s*0.7, s*0.8, darken(this.colorHex, 10), (i * (Math.PI*2)/6) + 0.5, 0);
                             }
+                            // Center (bud)
+                            for(let i=0; i<5; i++) {
+                                drawComplexPetal(headX, headY, s*0.4, s*0.5, darken(this.colorHex, 20), (i * (Math.PI*2)/5), 0);
+                            }
+
+                        } else if (this.type === 'carnation') {
+                            // CARNATION: Ruffled edges (Noise > 0)
+                            // Many tight layers
+                            for(let i=0; i<12; i++) {
+                                drawComplexPetal(headX, headY, s*0.8, s*1.2, this.colorHex, (i * (Math.PI*2)/12), 4);
+                            }
+                            for(let i=0; i<8; i++) {
+                                drawComplexPetal(headX, headY, s*0.6, s*0.9, lighten(this.colorHex, 10), (i * (Math.PI*2)/8) + 0.2, 4);
+                            }
+
                         } else if (this.type === 'tulip') {
-                            // Cup shape
-                            drawPetal(headX, headY, s, s*1.5, this.color, -0.2);
-                            drawPetal(headX, headY, s, s*1.5, this.color, 0.2);
-                            drawPetal(headX, headY, s*0.6, s*1.2, lighten(this.color, 10), 0);
-                        } else {
-                            // Carnation (Fan)
-                            for(let i=-2; i<=2; i++) {
-                                drawPetal(headX, headY, s*0.5, s*1.2, this.color, i*0.4);
-                            }
+                            // TULIP: Cup shape (3 petals)
+                            // Back petals
+                            drawComplexPetal(headX, headY, s, s*1.5, darken(this.colorHex, 10), -0.3, 0);
+                            drawComplexPetal(headX, headY, s, s*1.5, darken(this.colorHex, 10), 0.3, 0);
+                            // Front petal
+                            drawComplexPetal(headX, headY, s*1.2, s*1.6, this.colorHex, 0, 0);
                         }
                     }
                 }
 
                 update() {
                     if (this.height < this.maxHeight) { this.height += this.growSpeed; } else { this.bloomed = true; }
-                    if (this.bloomed && this.bloomSize < this.maxBloom) { this.bloomSize += 0.02; }
+                    if (this.bloomed && this.bloomSize < this.maxBloom) { this.bloomSize += 0.01; }
                     this.draw();
                 }
             }
 
-            // Simple Color Lightener
-            function lighten(color, percent) {
-                // Returns color as is for simplicity in this demo, 
-                // but real app would manipulate HEX strings.
-                return color; 
+            // Simple Color Helper (Hex -> RGB -> Darken -> Hex)
+            // Note: For a true prod app, use a library. Here is a simple approximated shifter.
+            function darken(col, amt) {
+                let num = parseInt(col.slice(1), 16);
+                let r = (num >> 16) - amt;
+                let g = ((num >> 8) & 0x00FF) - amt;
+                let b = (num & 0x0000FF) - amt;
+                if(r<0) r=0; if(g<0) g=0; if(b<0) b=0;
+                return "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6,0);
+            }
+            function lighten(col, amt) {
+                let num = parseInt(col.slice(1), 16);
+                let r = (num >> 16) + amt;
+                let g = ((num >> 8) & 0x00FF) + amt;
+                let b = (num & 0x0000FF) + amt;
+                if(r>255) r=255; if(g>255) g=255; if(b>255) b=255;
+                return "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6,0);
             }
 
-            const colors = ['#e63946', '#ff0a54', '#ff477e', '#9d4edd', '#fb8500'];
+            const colors = ['#e63946', '#d90429', '#ff0a54', '#ff477e', '#9d4edd', '#ffca3a', '#8ac926'];
             const types = ['rose', 'tulip', 'carnation'];
 
-            // Spacing
-            for(let i=0; i<window.innerWidth; i+=60) {
-                const depthY = Math.random() * 50; 
+            // Plant Garden
+            for(let i=0; i<window.innerWidth; i+=50) {
+                const depthY = Math.random() * 60; 
                 flowers.push(new Flower(
                     i + Math.random()*20, 
                     canvas.height + depthY, 
