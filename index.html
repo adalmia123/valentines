@@ -29,8 +29,8 @@
         /* --- ENVELOPE CONTAINER --- */
         .container {
             position: relative;
-            width: 400px;
-            height: 260px;
+            width: 450px; /* Bigger */
+            height: 300px; /* Bigger */
             cursor: pointer;
             z-index: 10;
         }
@@ -43,7 +43,7 @@
             height: 100%;
         }
 
-        /* 1. BACK (Dark Inside) */
+        /* LAYER 1: BACK (The dark inside) */
         .back {
             position: absolute;
             top: 0; left: 0;
@@ -53,7 +53,7 @@
             z-index: 1;
         }
 
-        /* 2. THE LETTER (Sandwiched in middle) */
+        /* LAYER 2: THE LETTER (Sandwiched) */
         .letter {
             position: absolute;
             bottom: 0; 
@@ -62,8 +62,11 @@
             height: 90%;
             background: var(--paper-color);
             border: 1px solid var(--paper-line);
-            z-index: 2; /* Important: Between Back and Pocket */
-            transition: transform 0.8s ease-in-out, z-index 0.1s;
+            
+            /* IMPORTANT: Starts at Z-2 (Inside), moves to Z-10 (Front) ONLY AFTER animation */
+            z-index: 2; 
+            transition: transform 0.6s ease-in-out, height 0.6s ease-in-out, z-index 0.1s linear 0.6s; 
+            
             padding: 25px; 
             box-sizing: border-box;
             display: flex;
@@ -73,55 +76,80 @@
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
 
-        /* 3. THE POCKET (Front Flaps) */
+        /* LAYER 3: THE POCKET (Front Flaps) */
         .pocket {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            z-index: 3; /* Covers the letter */
-            pointer-events: none; 
+            z-index: 5; /* MUST be higher than letter initially */
+            pointer-events: none; /* Allows clicking through empty spaces if needed */
         }
 
-        .flap {
-            position: absolute;
-        }
+        .flap { position: absolute; }
 
+        /* Geometry for 450x300 */
         .flap.left {
             top: 0; left: 0;
-            border-top: 130px solid transparent;
-            border-bottom: 130px solid transparent;
-            border-left: 220px solid var(--env-color);
+            border-top: 150px solid transparent;
+            border-bottom: 150px solid transparent;
+            border-left: 250px solid var(--env-color);
         }
         
         .flap.right {
             top: 0; right: 0;
-            border-top: 130px solid transparent;
-            border-bottom: 130px solid transparent;
-            border-right: 220px solid var(--env-color);
+            border-top: 150px solid transparent;
+            border-bottom: 150px solid transparent;
+            border-right: 250px solid var(--env-color);
         }
 
         .flap.bottom {
             bottom: 0; left: 0;
-            border-left: 200px solid transparent;
-            border-right: 200px solid transparent;
-            border-bottom: 150px solid var(--env-dark); 
+            border-left: 225px solid transparent;
+            border-right: 225px solid transparent;
+            border-bottom: 180px solid var(--env-dark); 
             border-radius: 0 0 10px 10px;
         }
 
-        /* 4. THE LID (Top Flap) */
+        /* LAYER 4: THE LID */
         .lid {
             position: absolute;
             top: 0; left: 0;
             width: 0; height: 0;
-            border-left: 200px solid transparent;
-            border-right: 200px solid transparent;
-            border-top: 140px solid var(--env-color); 
+            border-left: 225px solid transparent;
+            border-right: 225px solid transparent;
+            border-top: 160px solid var(--env-color); 
             transform-origin: top;
-            transition: transform 0.6s ease-in-out;
-            z-index: 4; 
+            transition: transform 0.4s ease-in-out;
+            z-index: 6; /* Topmost */
         }
 
-        /* --- LETTER CONTENT STYLING --- */
+        /* --- ANIMATION STATES --- */
+        
+        /* 1. Open Lid */
+        .open .lid {
+            transform: rotateX(180deg);
+            z-index: 0; /* Move to back */
+        }
+
+        /* 2. Slide Letter */
+        .open .letter {
+            /* Slide UP */
+            transform: translateY(-200px); 
+            /* Make Bigger */
+            height: 500px; 
+            /* Pop to front AFTER delay */
+            z-index: 20; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Content fades in */
+        .letter-content {
+            opacity: 0;
+            transition: opacity 0.3s ease 0.6s; /* Wait for slide to finish */
+        }
+        .open .letter-content { opacity: 1; }
+
+        /* --- LETTER TEXT --- */
         .letter h2 {
             font-family: 'Dancing Script', cursive;
             color: #d32f2f;
@@ -136,29 +164,6 @@
             margin: 5px 0;
             line-height: 1.2;
         }
-
-        .letter-content {
-            opacity: 0;
-            transition: opacity 0.5s ease 0.4s;
-        }
-
-        /* --- ANIMATION STATES --- */
-        
-        /* Step 1: Open Lid */
-        .open .lid {
-            transform: rotateX(180deg);
-            z-index: 0; 
-        }
-
-        /* Step 2: Slide Letter UP */
-        .open .letter {
-            transform: translateY(-200px); 
-            height: 480px; 
-            z-index: 5; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .open .letter-content { opacity: 1; }
 
         /* --- BUTTONS --- */
         .btn-group {
@@ -186,7 +191,8 @@
             background-color: #e0e0e0; 
             color: #333; 
             position: relative; 
-            transition: top 0.4s ease, left 0.4s ease; 
+            /* Smooth glide transition */
+            transition: top 0.4s ease-out, left 0.4s ease-out; 
         }
 
         #yesBtn:hover { transform: scale(1.1); }
@@ -290,6 +296,7 @@
     <div class="container" id="container" onclick="openEnvelope()">
         <div class="envelope">
             <div class="back"></div>
+            
             <div class="letter">
                 <div class="letter-content">
                     <h2>My Dearest,</h2>
@@ -302,11 +309,13 @@
                     </div>
                 </div>
             </div>
+
             <div class="pocket">
                 <div class="flap left"></div>
                 <div class="flap right"></div>
                 <div class="flap bottom"></div>
             </div>
+
             <div class="lid"></div>
         </div>
     </div>
@@ -330,20 +339,36 @@
             if (!isOpen) {
                 container.classList.add('open');
                 isOpen = true;
+                
+                // Spawn Opening Hearts
                 for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
+
+                // Enable buttons ONLY after letter is out (0.8s)
                 setTimeout(() => { canRunaway = true; }, 800);
             }
         }
 
-        // 2. RUNAWAY NO BUTTON
+        // 2. RUNAWAY NO BUTTON (FIXED BOUNDARIES)
         function runAway(e) {
             e.stopPropagation();
             if (!canRunaway) return;
-            const maxX = window.innerWidth - noBtn.offsetWidth - 50;
-            const maxY = window.innerHeight - noBtn.offsetHeight - 50;
+            
+            // Get Button Size
+            const btnW = noBtn.offsetWidth;
+            const btnH = noBtn.offsetHeight;
+            
+            // Calculate SAFE boundaries (Window - Button Size - Padding)
+            const maxX = window.innerWidth - btnW - 20;
+            const maxY = window.innerHeight - btnH - 20;
+            
+            // Generate valid random positions
+            const newX = Math.random() * maxX;
+            const newY = Math.random() * maxY;
+
+            // Apply
             noBtn.style.position = 'fixed';
-            noBtn.style.left = Math.max(20, Math.random() * maxX) + 'px';
-            noBtn.style.top = Math.max(20, Math.random() * maxY) + 'px';
+            noBtn.style.left = Math.max(10, newX) + 'px'; // Ensure > 10px from left
+            noBtn.style.top = Math.max(10, newY) + 'px'; // Ensure > 10px from top
             noBtn.style.zIndex = '1000';
             
             // Grow Yes Button
@@ -365,7 +390,7 @@
             
             generateReasons();
             
-            // START COMPLEX GARDEN
+            // Start Complex Garden
             setTimeout(initGarden, 100);
             
             setInterval(() => spawnHeart(false), 400); 
@@ -433,55 +458,40 @@
 
             const flowers = [];
 
-            // --- MATH HELPER: Draw a single petal with curves ---
-            // x, y: position
-            // w, h: width/height of petal
-            // color: fill color
-            // angle: rotation
-            // noise: 0 for smooth, >0 for carnation ruffle
+            // Helper: Draw Petal
             function drawComplexPetal(x, y, w, h, color, angle, noise = 0) {
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(angle);
                 ctx.beginPath();
                 
-                // If noise > 0, we draw a jagged line
                 if (noise > 0) {
                     ctx.moveTo(0, 0);
-                    // Ruffled Left Edge
+                    // Ruffles
                     for(let i=0; i<=h; i+=5) {
                         let offset = Math.sin(i * 0.5) * noise;
-                        // Quadratic approximation of petal shape + noise
                         let petalWidthAtY = Math.sin((i/h) * Math.PI) * w;
                         ctx.lineTo(-petalWidthAtY/2 + offset, -i);
                     }
-                    // Ruffled Top
-                    // Ruffled Right Edge
                     for(let i=h; i>=0; i-=5) {
                         let offset = Math.sin(i * 0.5) * noise;
                         let petalWidthAtY = Math.sin((i/h) * Math.PI) * w;
                         ctx.lineTo(petalWidthAtY/2 + offset, -i);
                     }
                 } else {
-                    // Smooth Petal (Rose/Tulip)
+                    // Smooth
                     ctx.moveTo(0, 0);
-                    ctx.bezierCurveTo(-w, -h/2, -w/2, -h, 0, -h); // Left curve
-                    ctx.bezierCurveTo(w/2, -h, w, -h/2, 0, 0);    // Right curve
+                    ctx.bezierCurveTo(-w, -h/2, -w/2, -h, 0, -h); 
+                    ctx.bezierCurveTo(w/2, -h, w, -h/2, 0, 0);    
                 }
                 
-                // Add Gradient for 3D look
-                // Radial gradient from bottom (darker) to top (lighter)
+                // Gradient for Depth
                 let grad = ctx.createLinearGradient(0, 0, 0, -h);
                 grad.addColorStop(0, darken(color, 20));
                 grad.addColorStop(1, color);
                 
                 ctx.fillStyle = grad;
                 ctx.fill();
-                // Optional: thin outline
-                ctx.strokeStyle = "rgba(0,0,0,0.1)";
-                ctx.lineWidth = 1;
-                ctx.stroke();
-                
                 ctx.restore();
             }
 
@@ -489,68 +499,40 @@
                 constructor(x, y, type, colorHex) {
                     this.x = x; this.y = y; this.originalY = y;
                     this.height = 0; 
-                    this.maxHeight = Math.random() * 150 + 200; // Stem height
+                    this.maxHeight = Math.random() * 150 + 200;
                     this.growSpeed = Math.random() * 2 + 1;
                     this.type = type; 
                     this.colorHex = colorHex;
                     this.bloomed = false; 
                     this.bloomSize = 0; 
-                    this.maxBloom = Math.random() * 0.5 + 0.8; // Bloom scale
+                    this.maxBloom = Math.random() * 0.5 + 0.8;
                 }
 
                 draw() {
-                    // 1. Draw Stem
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.originalY);
                     const curve = Math.sin(this.height * 0.05) * 5;
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
-                    // 2. Draw Leaves
-                    if(this.height > 60) {
-                        drawComplexPetal(this.x, this.originalY - 50, 20, 15, '#40916c', -1.5, 0); // Left leaf
-                    }
-                    if(this.height > 100) {
-                         drawComplexPetal(this.x, this.originalY - 90, 20, 15, '#40916c', 1.5, 0); // Right leaf
-                    }
+                    if(this.height > 60) { drawComplexPetal(this.x, this.originalY - 50, 20, 15, '#40916c', -1.5, 0); }
+                    if(this.height > 100) { drawComplexPetal(this.x, this.originalY - 90, 20, 15, '#40916c', 1.5, 0); }
 
-                    // 3. Draw Bloom
                     if (this.bloomed) {
-                        const headX = this.x;
-                        const headY = this.originalY - this.height;
-                        const s = this.bloomSize * 30; // Scale base
+                        const headX = this.x; const headY = this.originalY - this.height; const s = this.bloomSize * 30;
 
                         if (this.type === 'rose') {
-                            // ROSE: Layers of spiral petals
-                            // Outer
-                            for(let i=0; i<8; i++) {
-                                drawComplexPetal(headX, headY, s, s, this.colorHex, (i * (Math.PI*2)/8), 0);
-                            }
-                            // Inner (darker, rotated)
-                            for(let i=0; i<6; i++) {
-                                drawComplexPetal(headX, headY, s*0.7, s*0.8, darken(this.colorHex, 10), (i * (Math.PI*2)/6) + 0.5, 0);
-                            }
-                            // Center (bud)
-                            for(let i=0; i<5; i++) {
-                                drawComplexPetal(headX, headY, s*0.4, s*0.5, darken(this.colorHex, 20), (i * (Math.PI*2)/5), 0);
-                            }
+                            for(let i=0; i<8; i++) { drawComplexPetal(headX, headY, s, s, this.colorHex, (i * (Math.PI*2)/8), 0); }
+                            for(let i=0; i<6; i++) { drawComplexPetal(headX, headY, s*0.7, s*0.8, darken(this.colorHex, 10), (i * (Math.PI*2)/6) + 0.5, 0); }
+                            for(let i=0; i<5; i++) { drawComplexPetal(headX, headY, s*0.4, s*0.5, darken(this.colorHex, 20), (i * (Math.PI*2)/5), 0); }
 
                         } else if (this.type === 'carnation') {
-                            // CARNATION: Ruffled edges (Noise > 0)
-                            // Many tight layers
-                            for(let i=0; i<12; i++) {
-                                drawComplexPetal(headX, headY, s*0.8, s*1.2, this.colorHex, (i * (Math.PI*2)/12), 4);
-                            }
-                            for(let i=0; i<8; i++) {
-                                drawComplexPetal(headX, headY, s*0.6, s*0.9, lighten(this.colorHex, 10), (i * (Math.PI*2)/8) + 0.2, 4);
-                            }
+                            for(let i=0; i<12; i++) { drawComplexPetal(headX, headY, s*0.8, s*1.2, this.colorHex, (i * (Math.PI*2)/12), 4); }
+                            for(let i=0; i<8; i++) { drawComplexPetal(headX, headY, s*0.6, s*0.9, lighten(this.colorHex, 10), (i * (Math.PI*2)/8) + 0.2, 4); }
 
                         } else if (this.type === 'tulip') {
-                            // TULIP: Cup shape (3 petals)
-                            // Back petals
                             drawComplexPetal(headX, headY, s, s*1.5, darken(this.colorHex, 10), -0.3, 0);
                             drawComplexPetal(headX, headY, s, s*1.5, darken(this.colorHex, 10), 0.3, 0);
-                            // Front petal
                             drawComplexPetal(headX, headY, s*1.2, s*1.6, this.colorHex, 0, 0);
                         }
                     }
@@ -563,21 +545,15 @@
                 }
             }
 
-            // Simple Color Helper (Hex -> RGB -> Darken -> Hex)
-            // Note: For a true prod app, use a library. Here is a simple approximated shifter.
             function darken(col, amt) {
                 let num = parseInt(col.slice(1), 16);
-                let r = (num >> 16) - amt;
-                let g = ((num >> 8) & 0x00FF) - amt;
-                let b = (num & 0x0000FF) - amt;
+                let r = (num >> 16) - amt; let g = ((num >> 8) & 0x00FF) - amt; let b = (num & 0x0000FF) - amt;
                 if(r<0) r=0; if(g<0) g=0; if(b<0) b=0;
                 return "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6,0);
             }
             function lighten(col, amt) {
                 let num = parseInt(col.slice(1), 16);
-                let r = (num >> 16) + amt;
-                let g = ((num >> 8) & 0x00FF) + amt;
-                let b = (num & 0x0000FF) + amt;
+                let r = (num >> 16) + amt; let g = ((num >> 8) & 0x00FF) + amt; let b = (num & 0x0000FF) + amt;
                 if(r>255) r=255; if(g>255) g=255; if(b>255) b=255;
                 return "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6,0);
             }
@@ -585,7 +561,6 @@
             const colors = ['#e63946', '#d90429', '#ff0a54', '#ff477e', '#9d4edd', '#ffca3a', '#8ac926'];
             const types = ['rose', 'tulip', 'carnation'];
 
-            // Plant Garden
             for(let i=0; i<window.innerWidth; i+=50) {
                 const depthY = Math.random() * 60; 
                 flowers.push(new Flower(
