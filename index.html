@@ -8,11 +8,11 @@
     <style>
         :root {
             --bg-color: #ffe6ea;
-            --env-color: #ff5c8a;      /* Main envelope color */
-            --env-dark: #d6336c;       /* Darker shade for depth */
-            --env-flap: #ff7aa2;       /* Lighter flap color */
-            --paper-color: #fffbf0;    /* Creamy white paper */
-            --paper-line: #e6d2b5;     /* Subtle border */
+            --env-color: #ff5c8a;      
+            --env-dark: #d6336c;       
+            --env-inside: #880e4f;     /* Very dark inside pocket */
+            --paper-color: #fffbf0;    
+            --paper-line: #e6d2b5;     
         }
 
         body {
@@ -30,54 +30,49 @@
         .envelope-wrapper {
             position: relative;
             cursor: pointer;
-            width: 400px;  /* Bigger Size */
-            height: 260px; /* Bigger Size */
+            width: 400px;
+            height: 260px;
             transition: transform 0.3s ease;
             z-index: 10;
         }
 
-        .envelope-wrapper:hover {
-            transform: scale(1.02);
-        }
+        .envelope-wrapper:hover { transform: scale(1.02); }
 
-        /* --- LAYERING SYSTEM (The "Pocket" Effect) --- */
-        
-        /* Layer 1: The Back Panel (Darkest) */
+        /* 1. BACK PANEL (The Dark Inside) */
         .envelope-back {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--env-dark);
+            bottom: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: var(--env-inside);
             border-radius: 0 0 10px 10px;
-            z-index: 1;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.2); /* Shadow depth */
+            z-index: 1; 
         }
 
-        /* Layer 2: The Letter (Hidden Inside) */
+        /* 2. THE LETTER (Hidden Inside Pocket) */
         .letter {
             position: absolute;
-            bottom: 0;
+            bottom: 0; 
             left: 5%;
             width: 90%;
-            height: 95%;
+            height: 90%; /* Tucked inside */
             background-color: var(--paper-color);
             border: 1px solid var(--paper-line);
-            z-index: 2; /* Sits on top of Back, but behind Front Flaps */
-            transition: transform 0.8s ease-in-out, z-index 0.1s;
+            z-index: 2; /* Sandwiched Layer */
+            transition: transform 0.8s ease-in-out, height 0.8s ease-in-out, z-index 0.1s;
             padding: 25px; 
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 -5px 10px rgba(0,0,0,0.1);
         }
 
         .letter h2 {
             font-family: 'Dancing Script', cursive;
             color: #d32f2f;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin: 5px 0 15px 0;
         }
         
@@ -91,71 +86,68 @@
 
         .letter-content {
             opacity: 0;
-            transition: opacity 0.5s ease 0.4s; /* Fade in text AFTER slide up */
+            transition: opacity 0.5s ease 0.4s;
         }
 
-        /* Layer 3: The Front Flaps (Create the Pocket) */
+        /* 3. FRONT FLAPS (The Pocket Walls) - THESE HIDE THE LETTER */
         .flap {
             position: absolute;
-            z-index: 3; /* MUST be higher than letter */
+            z-index: 3; /* ABOVE the letter */
         }
 
+        /* Triangle Geometry Fixes */
         .flap.left {
             top: 0; left: 0;
-            width: 0; height: 0;
             border-top: 130px solid transparent;
             border-bottom: 130px solid transparent;
-            border-left: 210px solid var(--env-color);
+            border-left: 220px solid var(--env-color);
         }
         
         .flap.right {
             top: 0; right: 0;
-            width: 0; height: 0;
             border-top: 130px solid transparent;
             border-bottom: 130px solid transparent;
-            border-right: 210px solid var(--env-color);
+            border-right: 220px solid var(--env-color);
         }
 
         .flap.bottom {
             bottom: 0; left: 0;
-            width: 0; height: 0;
             border-left: 200px solid transparent;
             border-right: 200px solid transparent;
-            border-bottom: 140px solid var(--env-flap); /* Slightly lighter for contrast */
+            border-bottom: 150px solid var(--env-dark); 
             border-radius: 0 0 10px 10px;
         }
 
-        /* Layer 4: The Top Lid (The "Door") */
+        /* 4. TOP LID */
         .flap.top {
             top: 0; left: 0;
             width: 0; height: 0;
             border-left: 200px solid transparent;
             border-right: 200px solid transparent;
-            border-top: 140px solid var(--env-flap);
+            border-top: 140px solid var(--env-color); /* Matches side flaps */
             transform-origin: top;
             transition: transform 0.6s ease-in-out 0s, z-index 0.2s;
-            z-index: 4; /* Covers everything initially */
+            z-index: 4; /* Topmost */
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
         }
 
         /* --- ANIMATION STATES --- */
         
-        /* Step 1: Flip Top Flap */
+        /* Step 1: Flip Lid */
         .open .flap.top {
             transform: rotateX(180deg);
-            z-index: 0; /* Send to very back */
+            z-index: 0; /* Send to back */
         }
 
-        /* Step 2: Slide Letter Up */
+        /* Step 2: Slide Letter Up & Over */
         .open .letter {
-            transform: translateY(-200px); /* Moves UP out of the pocket */
-            z-index: 5; /* Brings it in front of everything */
-            height: 420px; /* Expands to show buttons */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(-200px); /* Moves straight up */
+            height: 420px; /* Grows taller */
+            z-index: 5; /* Moves in front of flaps */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
-        .open .letter-content {
-            opacity: 1;
-        }
+        .open .letter-content { opacity: 1; }
 
         /* --- BUTTONS --- */
         .btn-group {
@@ -174,7 +166,7 @@
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease; /* Smooth transition for everything */
+            transition: all 0.3s ease; 
         }
 
         #yesBtn { background-color: #ff4d6d; color: white; }
@@ -183,7 +175,6 @@
             background-color: #e0e0e0; 
             color: #333; 
             position: relative; 
-            /* This is the key to smooth movement */
             transition: top 0.4s ease, left 0.4s ease; 
         }
 
@@ -220,7 +211,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1; /* Flowers sit behind text */
+            z-index: 1; 
             pointer-events: none;
         }
 
@@ -382,8 +373,12 @@
             celeb.style.display = 'block';
             
             generateReasons();
-            setTimeout(initGarden, 100); // Start flowers immediately
-            setInterval(() => spawnHeart(false), 400); // Start rain
+            
+            // Start flowers (Garden)
+            setTimeout(initGarden, 100); 
+            
+            // Start rain
+            setInterval(() => spawnHeart(false), 400); 
         }
 
         // 4. DATA GENERATION
@@ -434,13 +429,19 @@
         }
 
         // ==========================================
-        //  ADVANCED FLOWER ENGINE (Bezier Petals & Gradients)
+        //  BIGGER FLOWER ENGINE
         // ==========================================
         function initGarden() {
             const canvas = document.getElementById('garden');
             const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            
+            // Set canvas to full window size
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
 
             const flowers = [];
             
@@ -448,34 +449,34 @@
                 constructor(x, y, type, colorHex) {
                     this.x = x; this.y = y; this.originalY = y;
                     this.height = 0; 
-                    this.maxHeight = Math.random() * 150 + 200; // Taller flowers
-                    this.growSpeed = Math.random() * 1 + 0.5;
+                    this.maxHeight = Math.random() * 200 + 300; // MUCH TALLER (300-500px)
+                    this.growSpeed = Math.random() * 2 + 1;
                     this.type = type; 
                     this.colorHex = colorHex;
                     this.bloomed = false; 
                     this.bloomSize = 0; 
-                    this.maxBloom = Math.random() * 15 + 25;
+                    this.maxBloom = Math.random() * 40 + 50; // MUCH BIGGER BLOOM (50-90px radius)
                 }
 
                 draw() {
-                    // 1. Draw Stem (Curved)
+                    // 1. Draw Stem (Thicker)
                     ctx.beginPath();
                     ctx.moveTo(this.x, this.originalY);
                     const curve = Math.sin(this.height * 0.05) * 5;
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; 
-                    ctx.lineWidth = 4; 
+                    ctx.lineWidth = 6; // Thicker stem
                     ctx.stroke();
 
-                    // 2. Draw Leaves
-                    if(this.height > 80) {
+                    // 2. Draw Leaves (Bigger)
+                    if(this.height > 100) {
                         ctx.beginPath();
                         ctx.fillStyle = '#40916c';
-                        ctx.ellipse(this.x - 10, this.originalY - 50, 20, 8, -0.5, 0, Math.PI*2);
+                        ctx.ellipse(this.x - 15, this.originalY - 70, 30, 10, -0.5, 0, Math.PI*2);
                         ctx.fill();
                     }
 
-                    // 3. Draw Bloom (with Petals)
+                    // 3. Draw Bloom
                     if (this.bloomed) {
                         const headX = this.x;
                         const headY = this.originalY - this.height;
@@ -490,41 +491,38 @@
                     }
                 }
 
-                // --- Helper: Draw Rose (Spiral Petals) ---
+                // Helper: Draw Rose
                 drawRose(ctx, x, y, size, color) {
-                    // Create gradient for depth
                     const grad = ctx.createRadialGradient(x, y, 0, x, y, size);
-                    grad.addColorStop(0, '#fff'); // Center highlight
+                    grad.addColorStop(0, '#fff'); 
                     grad.addColorStop(0.3, color);
-                    grad.addColorStop(1, this.darkenColor(color, 20));
+                    grad.addColorStop(1, '#880e4f'); 
 
                     ctx.fillStyle = grad;
-                    
-                    // Draw layers of petals
                     for (let i = 0; i < 5; i++) {
                         ctx.beginPath();
-                        ctx.arc(x, y, size - (i*3), 0, Math.PI * 2);
+                        ctx.arc(x, y, size - (i*5), 0, Math.PI * 2);
                         ctx.fill();
                         ctx.strokeStyle = 'rgba(0,0,0,0.1)';
                         ctx.stroke();
                     }
                 }
 
-                // --- Helper: Draw Tulip (Cup Shape) ---
+                // Helper: Draw Tulip
                 drawTulip(ctx, x, y, size, color) {
                     const grad = ctx.createLinearGradient(x, y, x, y - size);
-                    grad.addColorStop(0, '#2d6a4f'); // Dark base
+                    grad.addColorStop(0, '#2d6a4f'); 
                     grad.addColorStop(0.2, color);
-                    grad.addColorStop(1, '#ffc2d1'); // Light tip
+                    grad.addColorStop(1, '#ffc2d1'); 
 
                     ctx.fillStyle = grad;
                     
-                    // Center Petal
+                    // Center
                     ctx.beginPath();
                     ctx.ellipse(x, y - size/2, size/1.5, size, 0, 0, Math.PI*2);
                     ctx.fill();
 
-                    // Side Petals
+                    // Sides
                     ctx.beginPath();
                     ctx.ellipse(x - size/2, y - size/2, size/2, size*0.8, -0.2, 0, Math.PI*2);
                     ctx.fill();
@@ -533,25 +531,20 @@
                     ctx.fill();
                 }
 
-                // --- Helper: Draw Carnation (Ruffled) ---
+                // Helper: Draw Carnation
                 drawCarnation(ctx, x, y, size, color) {
                     ctx.fillStyle = color;
                     ctx.beginPath();
-                    for(let i=0; i<Math.PI*2; i+=0.2) {
-                        let r = size + Math.random()*5; // Ruffle effect
+                    for(let i=0; i<Math.PI*2; i+=0.1) {
+                        let r = size + Math.random()*8; 
                         ctx.lineTo(x + Math.cos(i)*r, y + Math.sin(i)*r);
                     }
                     ctx.fill();
                 }
 
-                // Utility to darken hex color for gradients
-                darkenColor(color, percent) {
-                    return color; // Simplification for code brevity, usually handled by library
-                }
-
                 update() {
                     if (this.height < this.maxHeight) { this.height += this.growSpeed; } else { this.bloomed = true; }
-                    if (this.bloomed && this.bloomSize < this.maxBloom) { this.bloomSize += 0.2; }
+                    if (this.bloomed && this.bloomSize < this.maxBloom) { this.bloomSize += 0.5; }
                     this.draw();
                 }
             }
@@ -559,12 +552,13 @@
             const colors = ['#e63946', '#ff0a54', '#ff477e', '#ff7096', '#9d4edd', '#fb8500'];
             const types = ['rose', 'tulip', 'carnation'];
 
-            // Plant flowers across the screen
-            for(let i=0; i<window.innerWidth; i+=35) {
-                // Randomly stagger Y position for depth
-                const depthY = Math.random() * 50; 
+            // Less flowers, but bigger and spread out
+            // Calculate how many fit based on screen width
+            const spacing = 80; 
+            for(let i=0; i<window.innerWidth; i+=spacing) {
+                const depthY = Math.random() * 80; 
                 flowers.push(new Flower(
-                    i + Math.random()*20, 
+                    i + Math.random()*40, 
                     canvas.height + depthY, 
                     types[Math.floor(Math.random()*types.length)], 
                     colors[Math.floor(Math.random()*colors.length)]
