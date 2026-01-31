@@ -21,30 +21,29 @@ function goToChoice() {
   document.getElementById("choice").classList.remove("hidden");
 }
 
+/* NO button impossible to click */
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
-
 function moveNoButton() {
   const x = Math.random() * (window.innerWidth - 100);
   const y = Math.random() * (window.innerHeight - 100);
-
   noBtn.style.position = "fixed";
   noBtn.style.left = x + "px";
   noBtn.style.top = y + "px";
-
   yesScale += 0.12;
   yesBtn.style.transform = `scale(${yesScale})`;
 }
-
 noBtn.addEventListener("mouseenter", moveNoButton);
 noBtn.addEventListener("mousemove", moveNoButton);
 
+/* YES clicked */
 function sayYes() {
   document.getElementById("choice").classList.add("hidden");
   document.getElementById("celebration").classList.remove("hidden");
   showReasons();
 }
 
+/* Floating hearts */
 function startHearts() {
   setInterval(() => {
     const heart = document.createElement("div");
@@ -56,6 +55,7 @@ function startHearts() {
   }, 300);
 }
 
+/* 100 reasons */
 function showReasons() {
   const container = document.getElementById("reasons");
   const baseReasons = [
@@ -75,3 +75,4 @@ function showReasons() {
     container.appendChild(card);
   }
 }
+
