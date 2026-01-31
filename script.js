@@ -21,7 +21,6 @@ function goToChoice() {
   document.getElementById("choice").classList.remove("hidden");
 }
 
-/* NO button impossible to click */
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 function moveNoButton() {
@@ -36,14 +35,12 @@ function moveNoButton() {
 noBtn.addEventListener("mouseenter", moveNoButton);
 noBtn.addEventListener("mousemove", moveNoButton);
 
-/* YES clicked */
 function sayYes() {
   document.getElementById("choice").classList.add("hidden");
   document.getElementById("celebration").classList.remove("hidden");
   showReasons();
 }
 
-/* Floating hearts */
 function startHearts() {
   setInterval(() => {
     const heart = document.createElement("div");
@@ -55,7 +52,6 @@ function startHearts() {
   }, 300);
 }
 
-/* 100 reasons */
 function showReasons() {
   const container = document.getElementById("reasons");
   const baseReasons = [
@@ -65,7 +61,6 @@ function showReasons() {
     "You’re my calm",
     "You make ordinary days special"
   ];
-
   for (let i = 1; i <= 100; i++) {
     const card = document.createElement("div");
     card.className = "reason-card";
