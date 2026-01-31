@@ -1,120 +1,128 @@
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
   font-family: 'Georgia', serif;
-  background: linear-gradient(#ffdde1, #ee9ca7);
-  min-height: 100vh;
-}
-
-.container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background: #ffd6e0;
+  overflow-x: hidden;
   text-align: center;
 }
 
-.hidden {
-  display: none;
+/* Hearts */
+.heart {
+  position: fixed;
+  bottom: -20px;
+  font-size: 20px;
+  animation: float 6s linear infinite;
 }
 
-/* ✉️ Envelope (adapted from MarianaBlue) */
-.envelope {
+@keyframes float {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-900px); opacity: 0; }
+}
+
+/* Scene */
+#scene {
+  margin-top: 150px;
+}
+
+/* Envelope */
+#envelope {
+  width: 320px;
+  height: 220px;
+  margin: auto;
   position: relative;
-  width: 300px;
-  height: 200px;
   cursor: pointer;
 }
 
 .back {
-  background: #f3a6b8;
+  position: absolute;
   width: 100%;
   height: 100%;
-  position: absolute;
+  background: #f8a5b6;
+  border-radius: 8px;
+  z-index: 1;
 }
 
 .front {
   position: absolute;
-  border-right: 150px solid #f7b7c9;
-  border-top: 100px solid transparent;
-  border-bottom: 100px solid transparent;
-  left: 150px;
+  width: 100%;
+  height: 100%;
+  background: #f497b6;
+  border-radius: 8px;
+  z-index: 3;
+  clip-path: polygon(0 60%, 50% 100%, 100% 60%, 100% 100%, 0 100%);
 }
 
-.front::before {
-  content: '';
+.flap {
   position: absolute;
-  border-left: 150px solid #f7b7c9;
-  border-top: 100px solid transparent;
-  border-bottom: 100px solid transparent;
-  left: -300px;
-}
-
-.top {
-  position: absolute;
-  border-top: 100px solid #ee9ca7;
-  border-left: 150px solid transparent;
-  border-right: 150px solid transparent;
+  width: 100%;
+  height: 100%;
+  background: #f0809a;
+  clip-path: polygon(0 0, 100% 0, 50% 50%);
   transform-origin: top;
   transition: transform 1s;
+  z-index: 4;
 }
 
+/* Letter */
 .letter {
   position: absolute;
-  background: #fffaf0;
   width: 260px;
   height: 160px;
-  top: 20px;
-  left: 20px;
-  padding: 15px;
+  background: #fffaf0;
+  top: 30px;
+  left: 30px;
+  padding: 20px;
   border-radius: 6px;
-  transform: translateY(40px) scale(0.9);
-  transition: all 1s;
+  z-index: 5;
+  transform: translateY(40px);
   opacity: 0;
+  transition: all 1s;
 }
 
-/* OPEN STATE */
-.envelope.open .top {
+#envelope.open .flap {
   transform: rotateX(180deg);
 }
 
-.envelope.open .letter {
-  transform: translateY(-140px) scale(1.1);
+#envelope.open .letter {
+  transform: translateY(-30px);
   opacity: 1;
 }
 
-.big-question {
-  font-weight: bold;
-  font-size: 18px;
-  margin-top: 12px;
+/* Expanded letter */
+#expanded-letter {
+  position: fixed;
+  inset: 0;
+  background: #ffd6e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1s;
 }
 
-/* Buttons */
-.buttons {
-  position: relative;
-  width: 260px;
-  height: 120px;
-  margin-top: 20px;
+.paper {
+  background: #fffaf0;
+  padding: 50px;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 15px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
 }
 
 button {
-  padding: 14px 28px;
-  font-size: 18px;
+  margin-top: 25px;
+  padding: 12px 30px;
   border: none;
-  border-radius: 30px;
+  border-radius: 25px;
   background: #ff4d6d;
   color: white;
+  font-size: 18px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-#yesBtn {
-  position: absolute;
-  left: 0;
+/* Yes / No */
+.buttons {
+  position: relative;
+  height: 120px;
 }
 
 #noBtn {
@@ -122,60 +130,7 @@ button {
   right: 0;
 }
 
-/* 🌷 Tulips */
-.bouquet {
-  display: flex;
-  gap: 25px;
-  margin: 30px 0;
-}
-
-.tulip {
-  width: 30px;
-  height: 50px;
-  background: #ff6f91;
-  border-radius: 50% 50% 0 0;
-  position: relative;
-}
-
-.tulip::after {
-  content: '';
-  width: 6px;
-  height: 70px;
-  background: #2d6a4f;
-  position: absolute;
-  top: 50px;
-  left: 12px;
-}
-
-/* 💕 Hearts */
-.heart {
-  position: fixed;
-  bottom: -20px;
-  font-size: 22px;
-  animation: float 6s linear infinite;
-}
-
-@keyframes float {
-  to {
-    transform: translateY(-900px);
-    opacity: 0;
-  }
-}
-
-/* Reasons */
-#reasons {
-  list-style: none;
-  max-width: 600px;
-  padding: 0;
-}
-
-#reasons li {
-  opacity: 0;
-  animation: fadeIn 0.5s forwards;
-  margin: 6px 0;
-}
-
-@keyframes fadeIn {
-  to { opacity: 1; }
+.hidden {
+  display: none;
 }
 
