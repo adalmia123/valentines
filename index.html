@@ -95,7 +95,17 @@
             transition: all 0.3s ease; 
         }
         #yesBtn { background-color: #ff4d6d; color: white; }
-        #noBtn { background-color: #e0e0e0; color: #333; position: relative; transition: top 0.3s ease, left 0.3s ease; }
+        
+        /* The No Button */
+        #noBtn { 
+            background-color: #e0e0e0; 
+            color: #333; 
+            /* Start relative to sit next to Yes */
+            position: relative; 
+            /* Smoothly glide to new positions */
+            transition: top 0.4s ease, left 0.4s ease; 
+        }
+
         #yesBtn:hover { transform: scale(1.1); }
 
         /* --- PHASE 2: CELEBRATION LAYOUT --- */
@@ -129,58 +139,65 @@
         /* CAROUSEL (Top Half) */
         .carousel-container {
             position: absolute;
-            top: 140px; /* Below header */
+            top: 150px; /* Default desktop spacing */
             width: 100%;
-            height: 250px;
-            overflow-x: auto; /* Horizontal Scroll */
+            height: 400px;
+            overflow-x: auto; 
             overflow-y: hidden;
-            white-space: nowrap;
-            padding: 20px 0;
             z-index: 30;
-            /* Hide Scrollbar */
-            scrollbar-width: none; 
-            -ms-overflow-style: none;
-            /* Smooth snap */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,100,100,0.3) transparent;
             scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
         }
-        .carousel-container::-webkit-scrollbar { display: none; }
-
+        
         .carousel-track {
-            display: inline-flex;
-            gap: 30px;
-            padding: 0 50vw; /* Center the first item */
+            display: grid;
+            grid-template-rows: repeat(2, 1fr); 
+            grid-auto-flow: column; 
+            gap: 20px;
+            padding: 10px 50px;
+            height: 100%;
+            box-sizing: border-box;
         }
 
         .note-card {
             width: 220px;
-            height: 180px;
-            background: rgba(255, 255, 255, 0.8);
+            height: 160px;
+            background: rgba(255, 255, 255, 0.85);
             border: 1px solid white;
             border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            display: inline-flex;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
             align-items: center;
             justify-content: center;
-            white-space: normal; /* Allow text wrap inside card */
-            padding: 20px;
+            padding: 15px;
             font-family: 'Indie Flower', cursive;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: #444;
             text-align: center;
-            scroll-snap-align: center;
             transition: transform 0.3s;
             cursor: pointer;
         }
-        .note-card:hover { transform: scale(1.1) rotate(-2deg); z-index: 40; background: white;}
+        .note-card:hover { transform: scale(1.05); z-index: 40; background: white;}
 
         /* GARDEN (Bottom Half) */
         #garden {
             position: absolute;
             bottom: 0; left: 0;
-            width: 100%; height: 60%; /* Occupies bottom 60% */
+            width: 100%; height: 50%;
             z-index: 10; 
             pointer-events: none;
+        }
+
+        /* --- MOBILE ADJUSTMENTS --- */
+        @media (max-width: 600px) {
+            .container { width: 90vw; height: 60vw; }
+            .letter.full-mode { width: 90vw; height: 60vh; }
+            .header-area h1 { font-size: 2.8rem; }
+            .header-area h2 { font-size: 1rem; max-width: 90%; }
+            .carousel-container { top: 180px; height: 320px; }
+            .carousel-track { gap: 15px; padding: 10px 20px; }
+            .note-card { width: 160px; height: 130px; font-size: 1rem; }
         }
 
         /* HEARTS */
@@ -259,33 +276,45 @@
             if (!isOpen) {
                 container.classList.add('open');
                 isOpen = true;
+                
                 for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
-                setTimeout(() => { letter.classList.add('full-mode'); canRunaway = true; }, 800);
+
+                setTimeout(() => {
+                    letter.classList.add('full-mode');
+                    canRunaway = true; 
+                }, 800);
             }
         }
 
-        // 2. SAFE RUNAWAY BUTTON
+        // 2. SAFE RUNAWAY BUTTON (NO JUMP FIX)
         function runAway(e) {
             e.stopPropagation();
             if (!canRunaway) return;
             
-            // Switch to fixed on first interaction to allow free movement
-            noBtn.style.position = 'fixed'; 
-            
-            // Get viewport safe zone (padding 50px)
-            const padding = 50;
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            // 1. Freeze current position visually if not already fixed
+            if (noBtn.style.position !== 'fixed') {
+                const rect = noBtn.getBoundingClientRect();
+                noBtn.style.left = rect.left + 'px';
+                noBtn.style.top = rect.top + 'px';
+                noBtn.style.position = 'fixed';
+            }
+
+            // 2. Calculate SAFE boundaries (100px padding from edges)
+            const pad = 100;
+            const winW = window.innerWidth;
+            const winH = window.innerHeight;
+            const btnW = noBtn.offsetWidth;
+            const btnH = noBtn.offsetHeight;
             
             // Randomly pick a new spot strictly within bounds
-            const newX = Math.random() * (maxX - padding) + padding;
-            const newY = Math.random() * (maxY - padding) + padding;
+            const newX = Math.random() * (winW - btnW - pad * 2) + pad;
+            const newY = Math.random() * (winH - btnH - pad * 2) + pad;
 
             noBtn.style.left = newX + 'px'; 
             noBtn.style.top = newY + 'px'; 
             noBtn.style.zIndex = '2000';
             
-            // Grow Yes
+            // Grow Yes Button
             const yesBtn = document.getElementById('yesBtn');
             let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
             yesBtn.style.fontSize = (currentSize + 2) + 'px';
@@ -324,7 +353,6 @@
                 const card = document.createElement('div');
                 card.classList.add('note-card');
                 card.innerText = reason;
-                // Add a cute colored border
                 const color = cardColors[Math.floor(Math.random() * cardColors.length)];
                 card.style.borderTop = `5px solid ${color}`;
                 track.appendChild(card);
@@ -364,7 +392,7 @@
             
             function resize() {
                 canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight * 0.6; // Only bottom 60%
+                canvas.height = window.innerHeight * 0.5; // Bottom 50%
             }
             resize();
             window.addEventListener('resize', resize);
