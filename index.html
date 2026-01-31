@@ -7,17 +7,64 @@
 </head>
 <body>
 
+<!-- Floating hearts -->
+<div id="hearts"></div>
+
+<!-- ENVELOPE -->
 <div class="container">
   <div class="envelope" id="envelope">
     <div class="flap"></div>
-    <div class="body"></div>
-    <div class="letter">
+    <div class="letter" id="letter">
       Will you be my Valentine? 💖
     </div>
   </div>
 </div>
 
+<!-- EXPANDED LETTER -->
+<div id="expanded-letter" class="hidden">
+  <div class="paper">
+    <h1>Vaishnavi ❤️</h1>
+    <p>
+      From the moment you came into my life,<br><br>
+      everything started feeling lighter, warmer,<br>
+      and more meaningful.<br><br>
+
+      You are my calm on stressful days,<br>
+      my happiness on ordinary ones,<br>
+      and my favorite part of every day.<br><br>
+
+      Will you be my Valentine? 💌
+    </p>
+
+    <button onclick="goToChoice()">Continue 💕</button>
+  </div>
+</div>
+
+<!-- YES / NO -->
+<div id="choice" class="hidden">
+  <h1>Will you be my Valentine? 💘</h1>
+  <div class="buttons">
+    <button id="yesBtn" onclick="sayYes()">YES 💕</button>
+    <button id="noBtn">NO 😛</button>
+  </div>
+</div>
+
+<!-- CELEBRATION -->
+<div id="celebration" class="hidden">
+  <h1>You said YES 😭💖</h1>
+
+  <div class="bouquet">
+    <div class="flower tulip"></div>
+    <div class="flower rose"></div>
+    <div class="flower carnation"></div>
+  </div>
+
+  <h2>100 Reasons Why I Love You</h2>
+  <div class="reasons-grid" id="reasons"></div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
+
 
