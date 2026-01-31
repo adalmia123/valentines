@@ -24,30 +24,28 @@ body {
   to { transform: translateY(-900px); opacity:0;}
 }
 
-/* Envelope container */
+/* Envelope */
 .envelope-wrapper {
   margin-top:100px;
-  perspective:1000px;
   width:320px;
   height:220px;
   margin-left:auto;
   margin-right:auto;
   position:relative;
 }
-
-/* Envelope */
-.envelope {
+.envelope-body {
+  position:relative;
   width:100%;
   height:100%;
-  position:relative;
-  cursor:pointer;
-  transform-style:preserve-3d;
+  background:#f497b6;
+  border-radius:4px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  overflow:hidden;
 }
-
-/* Top flap */
-.flap {
+.envelope-flap {
   position:absolute;
-  top:0; left:0;
+  top:0;
+  left:0;
   width:100%;
   height:50%;
   background:#f0809a;
@@ -56,41 +54,25 @@ body {
   transition: transform 1s ease;
   z-index:3;
 }
+.envelope.open .envelope-flap { transform: rotateX(-180deg); }
 
-/* Bottom flap */
-.bottom {
-  position:absolute;
-  bottom:0; left:0;
-  width:100%;
-  height:50%;
-  background:#f497b6;
-  clip-path: polygon(0 100%, 50% 0, 100% 100%);
-  z-index:2;
-}
-
-/* Letter inside envelope */
 .letter {
   position:absolute;
-  width:260px;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%) translateY(0);
+  width:280px;
   height:160px;
-  top:30px; left:50%;
-  transform:translateX(-50%) translateY(80px);
-  padding:20px;
-  border-radius:6px;
   background:#fffaf0;
-  z-index:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  border-radius:6px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.15);
+  padding:20px;
   font-size:18px;
   opacity:0;
   transition: all 1s ease;
-  box-shadow:0 10px 20px rgba(0,0,0,0.15);
+  z-index:2;
 }
-
-/* Open envelope */
-.envelope.open .flap { transform: rotateX(-180deg); }
-.envelope.open .letter { opacity:1; transform:translateX(-50%) translateY(-20px); }
+.envelope.open .letter { opacity:1; transform:translateX(-50%) translateY(-180px); }
 
 /* Expanded letter */
 #expanded-letter {
@@ -123,10 +105,15 @@ button {
 }
 .buttons { position:relative; height:120px; }
 
-/* Celebration */
+/* Celebration / bouquet */
 #celebration { display:none; }
-.bouquet { display:flex; justify-content:center; margin:40px 0; gap:20px; }
-.bouquet svg { width:60px; height:120px; animation:sway 3s ease-in-out infinite; }
+.bouquet {
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin:40px 0;
+}
+.bouquet svg { width:80px; height:150px; animation:sway 3s ease-in-out infinite; }
 @keyframes sway { 0%,100%{transform:rotate(-2deg);}50%{transform:rotate(2deg);} }
 
 /* Reasons letters */
@@ -155,11 +142,11 @@ button {
 <div id="hearts"></div>
 
 <!-- Envelope -->
-<div class="envelope-wrapper">
+<div class="envelope-wrapper" id="envelope-wrapper">
   <div class="envelope" id="envelope">
-    <div class="flap"></div>
+    <div class="envelope-body"></div>
+    <div class="envelope-flap"></div>
     <div class="letter" id="letter">Will you be my Valentine? 💖</div>
-    <div class="bottom"></div>
   </div>
 </div>
 
@@ -192,20 +179,24 @@ button {
 <div id="celebration">
   <h1>You said YES 😭💖</h1>
   <div class="bouquet" id="bouquet">
-    <!-- Tulip -->
-    <svg viewBox="0 0 64 64">
-      <path d="M32 2 C22 12, 22 32, 32 42 C42 32, 42 12, 32 2" fill="#ff6f91"/>
-      <rect x="30" y="42" width="4" height="20" fill="#2d6a4f"/>
+    <!-- Tulip SVG -->
+    <svg viewBox="0 0 64 128">
+      <path d="M32 0 C20 20, 20 60, 32 80 C44 60, 44 20, 32 0" fill="#ff6f91"/>
+      <rect x="30" y="80" width="4" height="48" fill="#2d6a4f"/>
     </svg>
-    <!-- Rose -->
-    <svg viewBox="0 0 64 64">
-      <circle cx="32" cy="20" r="12" fill="#ff4d6d"/>
-      <rect x="30" y="32" width="4" height="30" fill="#2d6a4f"/>
+    <!-- Rose SVG -->
+    <svg viewBox="0 0 64 128">
+      <circle cx="32" cy="24" r="12" fill="#ff4d6d"/>
+      <rect x="30" y="36" width="4" height="72" fill="#2d6a4f"/>
     </svg>
-    <!-- Carnation -->
-    <svg viewBox="0 0 64 64">
+    <!-- Carnation SVG -->
+    <svg viewBox="0 0 64 128">
       <circle cx="32" cy="20" r="10" fill="#ffc8dd"/>
-      <rect x="30" y="30" width="4" height="32" fill="#2d6a4f"/>
+      <rect x="30" y="30" width="4" height="78" fill="#2d6a4f"/>
+    </svg>
+    <!-- Jar SVG behind flowers -->
+    <svg viewBox="0 0 64 128" style="position:absolute; bottom:0; z-index:-1;">
+      <rect x="22" y="60" width="20" height="68" rx="4" ry="4" fill="#c0e0ff" opacity="0.6"/>
     </svg>
   </div>
   <h2>100 Reasons Why I Love You</h2>
@@ -215,6 +206,7 @@ button {
 <script>
 const envelope=document.getElementById("envelope");
 const letter=document.getElementById("letter");
+const envelopeWrapper=document.getElementById("envelope-wrapper");
 const expandedLetter=document.getElementById("expanded-letter");
 const choice=document.getElementById("choice");
 const celebration=document.getElementById("celebration");
@@ -232,7 +224,7 @@ envelope.addEventListener("click",()=>{
 // Click letter → expand letter & hide envelope
 letter.addEventListener("click",(e)=>{
   e.stopPropagation();
-  document.querySelector(".envelope-wrapper").style.display="none";
+  envelopeWrapper.style.display="none";
   expandedLetter.style.display="flex";
 });
 
@@ -255,7 +247,7 @@ function moveNoButton(){
 noBtn.addEventListener("mouseenter",moveNoButton);
 noBtn.addEventListener("mousemove",moveNoButton);
 
-// YES clicked → show flowers + hearts + 100 reasons
+// YES clicked → show bouquet + hearts + 100 reasons
 function sayYes(){
   choice.style.display="none";
   celebration.style.display="block";
@@ -296,7 +288,3 @@ function showReasons(){
 </script>
 </body>
 </html>
-
-
-
-
