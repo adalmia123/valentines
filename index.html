@@ -7,33 +7,31 @@
 </head>
 <body>
 
-<!-- Hearts container -->
 <div id="hearts"></div>
 
-<!-- Envelope Scene -->
-<div id="scene">
-  <div id="envelope" onclick="openEnvelope()">
-    <div class="back"></div>
+<!-- Envelope -->
+<div class="container">
+  <div class="envelope" id="envelope">
+    <div class="flap"></div>
+    <div class="body"></div>
+
     <div class="letter" onclick="expandLetter(event)">
       <p>Will you be my Valentine? 💖</p>
     </div>
-    <div class="front"></div>
-    <div class="flap"></div>
   </div>
 </div>
 
 <!-- Expanded Letter -->
-<div id="expanded-letter" class="hidden">
+<div id="expanded" class="hidden">
   <div class="paper">
     <h1>Vaishnavi ❤️</h1>
     <p>
       From the moment you came into my life,<br><br>
-      everything started feeling softer, warmer,<br>
+      everything felt lighter, warmer,<br>
       and more meaningful.<br><br>
 
-      You are my calm on overwhelming days,<br>
-      my happiness on ordinary ones,<br>
-      and my favorite part of every day.<br><br>
+      You are my calm, my happiness,<br>
+      and my favorite person.<br><br>
 
       Will you be my Valentine? 💌
     </p>
@@ -42,27 +40,13 @@
   </div>
 </div>
 
-<!-- YES / NO -->
+<!-- Yes / No -->
 <div id="choice" class="hidden">
   <h1>Will you be my Valentine? 💘</h1>
   <div class="buttons">
     <button id="yesBtn" onclick="sayYes()">YES 💕</button>
     <button id="noBtn">NO 😛</button>
   </div>
-</div>
-
-<!-- Celebration -->
-<div id="celebration" class="hidden">
-  <h1>You said YES 😭💖</h1>
-
-  <div class="bouquet">
-    <div class="tulip"><div class="petal"></div><div class="stem"></div></div>
-    <div class="tulip"><div class="petal"></div><div class="stem"></div></div>
-    <div class="tulip"><div class="petal"></div><div class="stem"></div></div>
-  </div>
-
-  <h2>100 Reasons Why I Love You</h2>
-  <ul id="reasons"></ul>
 </div>
 
 <script src="script.js"></script>
