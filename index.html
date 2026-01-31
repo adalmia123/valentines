@@ -3,245 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Be My Valentine?</title>
-    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>For My Valentine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-pink: #ffe6ea;
-            --env-base: #ff5c8a;    /* Darker pink for envelope body */
-            --env-flap: #ff7aa2;    /* Lighter pink for flaps */
-            --env-inside: #e0457b;  /* Darker shade for inside depth */
-            --letter-paper: #fff;
-            --text-color: #c92a42;
+            --bg-color: #fce4ec;
+            --env-color: #ff5c8a;
+            --env-dark: #d6336c;
+            --paper-color: #fffbea; 
+            --line-color: #a2d2ff;
+            --margin-color: #ff9999;
         }
 
         body {
-            background-color: var(--bg-pink);
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            overflow: hidden;
+            overflow: hidden; 
         }
 
-        /* --- Envelope Container --- */
+        /* --- ENVELOPE STYLES --- */
         .envelope-wrapper {
             position: relative;
-            width: 320px;
-            height: 220px;
             cursor: pointer;
-            transition: transform 0.3s;
+            width: 400px; 
+            height: 280px; 
+            transition: transform 0.3s ease;
         }
 
-        /* Hover effect before opening */
         .envelope-wrapper:hover {
             transform: scale(1.02);
         }
 
-        /* The Envelope Body */
         .envelope {
             position: relative;
             width: 100%;
             height: 100%;
-            background-color: var(--env-inside); /* Dark inside color */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            border-radius: 0 0 10px 10px;
+            background-color: var(--env-dark);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            z-index: 1;
         }
 
-        /* Flaps (Triangles) */
+        /* FLAPS */
         .flap {
             position: absolute;
-            width: 0;
-            height: 0;
-            z-index: 3;
+            z-index: 5;
         }
 
-        /* Side Flaps */
         .flap.left {
             top: 0; left: 0;
-            border-top: 110px solid transparent;
-            border-bottom: 110px solid transparent;
-            border-left: 160px solid var(--env-flap); /* Lighter */
+            width: 0; height: 0;
+            border-top: 140px solid transparent;
+            border-bottom: 140px solid transparent;
+            border-left: 200px solid var(--env-color);
         }
-
+        
         .flap.right {
             top: 0; right: 0;
-            border-top: 110px solid transparent;
-            border-bottom: 110px solid transparent;
-            border-right: 160px solid var(--env-flap); /* Lighter */
+            width: 0; height: 0;
+            border-top: 140px solid transparent;
+            border-bottom: 140px solid transparent;
+            border-right: 200px solid var(--env-color);
         }
 
-        /* Bottom Flap */
         .flap.bottom {
             bottom: 0; left: 0;
-            border-left: 160px solid transparent;
-            border-right: 160px solid transparent;
-            border-bottom: 115px solid var(--env-base); /* Slightly darker base */
-            border-radius: 0 0 10px 10px;
+            width: 0; height: 0;
+            border-left: 200px solid transparent;
+            border-right: 200px solid transparent;
+            border-bottom: 160px solid var(--env-dark); 
         }
 
-        /* Top Flap (The Moving Part) */
         .flap.top {
             top: 0; left: 0;
-            border-left: 160px solid transparent;
-            border-right: 160px solid transparent;
-            border-top: 120px solid var(--env-flap);
+            width: 0; height: 0;
+            border-left: 200px solid transparent;
+            border-right: 200px solid transparent;
+            border-top: 160px solid var(--env-color);
             transform-origin: top;
             transition: transform 0.6s ease-in-out, z-index 0.6s;
-            z-index: 4;
-            /* Added border to stop blending */
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1)); 
+            z-index: 6; 
         }
 
-        /* --- The Letter --- */
+        /* --- THE LETTER --- */
         .letter {
             position: absolute;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 5%;
             width: 90%;
             height: 90%;
-            background: var(--letter-paper);
-            border-radius: 5px;
-            z-index: 2; /* Inside envelope initially */
-            transition: all 1s ease-in-out;
-            padding: 20px;
+            background-color: var(--paper-color);
+            /* Lined Paper Pattern */
+            background-image: 
+                linear-gradient(90deg, transparent 39px, var(--margin-color) 40px, transparent 41px),
+                linear-gradient(var(--line-color) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 30px;
+            
+            z-index: 2; 
+            transition: bottom 0.8s ease-in-out, height 0.8s, transform 0.8s, z-index 0.1s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            padding: 20px 20px 20px 60px; 
             box-sizing: border-box;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+        }
+
+        /* Content hidden initially */
+        .letter-content {
+            opacity: 0; 
+            transition: opacity 0.5s ease 0.8s; /* Delayed fade in */
+            width: 100%;
             text-align: center;
         }
 
         .letter h2 {
-            font-family: 'Indie Flower', cursive;
-            color: var(--text-color);
-            margin-bottom: 10px;
-            font-size: 1.5rem;
+            font-family: 'Caveat', cursive;
+            color: #d32f2f;
+            font-size: 2.5rem;
+            margin: 0 0 20px 0;
+            line-height: 1.2;
         }
-
-        .letter p {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        /* --- Animation States --- */
         
-        /* 1. Flap Opens */
+        .letter p {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #444;
+            margin: 10px 0;
+        }
+
+        /* --- OPEN ANIMATION --- */
         .open .flap.top {
             transform: rotateX(180deg);
-            z-index: 1; /* Goes behind letter */
+            z-index: 1; 
         }
 
-        /* 2. Letter Exits and Expands */
         .open .letter {
-            bottom: 100px; /* Moves up */
-            transform: translateX(-50%) scale(1.3); /* Grows larger */
-            height: 350px; /* Expands height */
-            width: 320px;
-            z-index: 10; /* Comes to very front */
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            bottom: 50px;
+            height: 520px; 
+            width: 450px;
+            left: -25px; 
+            z-index: 10; 
+            transform: scale(1);
         }
 
-        /* --- Buttons --- */
+        .open .letter-content {
+            opacity: 1; /* Shows text AND buttons */
+        }
+
+        /* --- BUTTONS --- */
         .btn-group {
-            margin-top: 20px;
+            margin-top: 40px;
             display: flex;
-            gap: 15px;
-            position: relative;
-            width: 100%;
+            gap: 30px;
             justify-content: center;
+            position: relative; /* Keeps them in flow initially */
         }
 
         button {
-            padding: 12px 30px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
+            padding: 12px 35px;
             font-family: 'Poppins', sans-serif;
-            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 16px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
 
         #yesBtn {
             background-color: #ff4d6d;
             color: white;
-            box-shadow: 0 4px 10px rgba(255, 77, 109, 0.4);
         }
 
         #noBtn {
-            background-color: #f1f1f1;
+            background-color: #e0e0e0;
             color: #333;
-            /* Important for movement */
-            position: absolute; 
-            left: 55%; /* Start next to Yes */
+            position: relative; 
         }
 
-        /* --- Balloon Hearts --- */
-        .balloon-heart {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            font-size: 24px;
-            color: #ff4d6d;
-            opacity: 0;
-            z-index: 1; /* Behind letter, in front of envelope */
-            pointer-events: none;
-        }
-
-        @keyframes floatUpBalloon {
-            0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translate(-50%, -400px) scale(1.2); opacity: 0; }
-        }
-
-        /* --- Phase 2: Celebration --- */
+        /* --- CELEBRATION PAGE --- */
         #celebration {
             display: none;
             width: 100%;
-            padding: 50px 20px;
+            min-height: 100vh;
+            padding: 40px;
             text-align: center;
+            box-sizing: border-box;
+            background: linear-gradient(180deg, #fff0f3 0%, #ffe6ea 100%);
         }
 
-        .flower-grid {
+        .flower-container {
+            margin: 20px 0;
+        }
+        .flower-container img {
+            width: 180px;
+            margin: 0 -20px;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
+            animation: bloom 1s ease-out backwards;
+        }
+
+        /* NOTE GRID */
+        .reasons-grid {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .flower-img {
-            width: 120px;
-            animation: grow 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        
-        .note-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 50px auto;
         }
 
-        .note {
-            background: white;
+        .sticky-note {
+            width: 200px;
+            height: 200px;
             padding: 20px;
+            box-sizing: border-box;
             font-family: 'Indie Flower', cursive;
-            box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
-            transform: rotate(-2deg);
+            font-size: 1.4rem;
+            color: #444;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(var(--rot));
             transition: transform 0.3s;
-            background: linear-gradient(#fff, #fdfbfb);
         }
         
-        .note:hover { transform: rotate(0) scale(1.05); z-index: 5; }
-        .note:nth-child(even) { transform: rotate(2deg); }
+        .sticky-note:hover {
+            transform: scale(1.1) rotate(0deg) !important;
+            z-index: 100;
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.2);
+        }
 
-        @keyframes grow { from{transform:scale(0);} to{transform:scale(1);} }
+        @keyframes bloom { from{transform: scale(0);} to{transform: scale(1);} }
+
+        /* Floating Hearts */
+        .floating-heart {
+            position: fixed;
+            top: 100vh;
+            font-size: 2rem;
+            animation: floatUp linear forwards;
+            z-index: 0;
+        }
+        @keyframes floatUp { to { transform: translateY(-110vh) rotate(360deg); } }
 
     </style>
 </head>
@@ -255,145 +266,166 @@
             <div class="flap top"></div>
             
             <div class="letter">
-                <h2>My Dearest,</h2>
-                <p>I have a very important question to ask you...</p>
-                <p><strong>Will you be my Valentine?</strong></p>
-                
-                <div class="btn-group">
-                    <button id="yesBtn" onclick="acceptLove(event)">Yes</button>
-                    <button id="noBtn" onmouseover="dodgeNo(event)">No</button>
+                <div class="letter-content">
+                    <h2>Dearest,</h2>
+                    <p>I have something to ask you...</p>
+                    <p><strong>Will you be my Valentine?</strong></p>
+                    <p style="font-size: 1rem; color: #888; margin-top:30px;">(Please say yes!)</p>
+                    
+                    <div class="btn-group">
+                        <button id="yesBtn" onclick="celebrate(event)">YES!</button>
+                        <button id="noBtn" onmouseover="runAway(event)">No</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="celebration">
-        <h1 style="font-family: 'Indie Flower'; color: #c92a42; font-size: 3rem;">YAY! I Love You! ❤️</h1>
+        <h1 style="font-family: 'Caveat'; font-size: 4rem; color: #c92a42;">YAY! I Love You! ❤️</h1>
         
-        <div class="flower-grid">
-            <img src="https://cdn-icons-png.flaticon.com/512/3028/3028628.png" class="flower-img" style="animation-delay: 0s">
-            <img src="https://cdn-icons-png.flaticon.com/512/3028/3028634.png" class="flower-img" style="animation-delay: 0.2s">
-            <img src="https://cdn-icons-png.flaticon.com/512/3028/3028639.png" class="flower-img" style="animation-delay: 0.4s">
+        <div class="flower-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/1808/1808845.png" style="animation-delay: 0.1s">
+            <img src="https://cdn-icons-png.flaticon.com/512/3460/3460592.png" style="animation-delay: 0.3s">
+            <img src="https://cdn-icons-png.flaticon.com/512/1808/1808826.png" style="animation-delay: 0.5s">
         </div>
 
         <h2 style="font-family: 'Poppins'; color: #555;">100 Reasons Why:</h2>
-        <div class="note-grid" id="notes"></div>
+        <div class="reasons-grid" id="reasonsGrid"></div>
     </div>
 
     <script>
         let isOpen = false;
+        let canRunaway = false; // Lock button until letter is open
         const envelope = document.getElementById('envelopeWrapper');
         const noBtn = document.getElementById('noBtn');
 
-        // 1. Open Envelope & Balloon Hearts
+        // 1. OPEN ENVELOPE
         function openEnvelope() {
             if (!isOpen) {
                 envelope.classList.add('open');
                 isOpen = true;
                 
                 // Spawn Balloon Hearts
-                for(let i=0; i<15; i++) {
-                    setTimeout(createBalloonHeart, i * 100);
+                for(let i=0; i<10; i++){
+                    setTimeout(() => spawnHeart(true), i*200);
                 }
+
+                // Unlock the "No" button after the animation finishes (1 second)
+                setTimeout(() => {
+                    canRunaway = true;
+                }, 1000);
             }
         }
 
-        function createBalloonHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('balloon-heart');
-            heart.innerHTML = '❤️';
-            heart.style.left = (50 + (Math.random() * 40 - 20)) + '%'; // Randomize X near center
-            heart.style.animation = `floatUpBalloon ${2 + Math.random()}s ease-in forwards`;
-            envelope.appendChild(heart);
-        }
+        // 2. RUNAWAY NO BUTTON
+        function runAway(e) {
+            e.stopPropagation();
 
-        // 2. The Smart Runaway Button
-        function dodgeNo(e) {
-            e.stopPropagation(); // Don't trigger envelope click
+            // Prevent movement if letter isn't fully open yet
+            if (!canRunaway) return;
 
-            // Screen boundaries
-            const padding = 50;
-            const maxX = window.innerWidth - padding;
-            const maxY = window.innerHeight - padding;
-            
-            // Random position
-            let newX = Math.random() * (maxX - padding) + padding;
-            let newY = Math.random() * (maxY - padding) + padding;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
 
-            noBtn.style.position = 'fixed'; // Break out of the container flow
-            noBtn.style.left = newX + 'px';
-            noBtn.style.top = newY + 'px';
-            noBtn.style.zIndex = '1000'; // Always on top
+            // Calculate safe boundaries
+            const maxX = windowWidth - btnWidth - 50;
+            const maxY = windowHeight - btnHeight - 50;
 
-            // Grow the Yes button
+            const newX = Math.random() * maxX;
+            const newY = Math.random() * maxY;
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = Math.max(20, newX) + 'px';
+            noBtn.style.top = Math.max(20, newY) + 'px';
+            noBtn.style.zIndex = '1000';
+
+            // Grow YES button
             const yesBtn = document.getElementById('yesBtn');
-            let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
-            if (currentSize < 100) { // Cap max size
-                yesBtn.style.fontSize = (currentSize + 5) + 'px';
-                yesBtn.style.padding = (parseFloat(window.getComputedStyle(yesBtn).paddingTop) + 2) + 'px ' + (parseFloat(window.getComputedStyle(yesBtn).paddingRight) + 5) + 'px';
-            }
+            const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = (currentSize + 5) + 'px';
+            yesBtn.style.padding = '15px 40px';
         }
 
-        // 3. Accept Logic
-        function acceptLove(e) {
+        // 3. CELEBRATION
+        function celebrate(e) {
             e.stopPropagation();
             
-            // Hide envelope phase
             envelope.style.display = 'none';
-            noBtn.style.display = 'none'; // Hide the rogue button
+            noBtn.style.display = 'none';
             
-            // Show celebration
-            document.getElementById('celebration').style.display = 'block';
-            document.body.style.overflow = 'auto'; // Enable scroll
+            const celeb = document.getElementById('celebration');
+            celeb.style.display = 'block';
+            document.body.style.overflow = 'auto'; 
             
-            generateNotes();
-            startRain();
+            generateReasons();
+            
+            setInterval(() => spawnHeart(false), 300);
         }
 
-        // 4. Generate Notes
-        const reasons = [
-            "Your smile is my favorite thing",
-            "You make bad days better",
-            "Your laugh is contagious",
-            "You are so supportive",
-            "You give the best hugs",
-            // Add your 100 reasons here!
+        // 4. GENERATE COLORFUL NOTES
+        // ********************************************
+        // EDIT YOUR REASONS HERE
+        // ********************************************
+        const myReasons = [
+            "Your kindness", "The way you smell", "Your cooking", "Your ambition",
+            "Our late night talks", "Your eyes", "How you support me", "Your hugs",
+            "Inside jokes", "Your patience", "Your intelligence", "Your style",
+            "Your laugh", "The way you dance", "Your voice"
+            // ... Add more!
         ];
-        
-        // Filler
-        while(reasons.length < 100) reasons.push("I love you more than words can say!");
 
-        function generateNotes() {
-            const grid = document.getElementById('notes');
-            reasons.forEach((text, i) => {
+        // Filler
+        while (myReasons.length < 100) {
+            myReasons.push("Reason #" + (myReasons.length + 1) + ": I love you!");
+        }
+
+        // Pastel Colors for Notes
+        const noteColors = [
+            '#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', 
+            '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff', '#fffffc'
+        ];
+
+        function generateReasons() {
+            const grid = document.getElementById('reasonsGrid');
+            myReasons.forEach((reason, i) => {
                 const note = document.createElement('div');
-                note.className = 'note';
-                note.innerText = text;
-                note.style.animation = `grow 0.5s ease forwards ${i * 0.05}s`;
+                note.classList.add('sticky-note');
+                note.innerText = reason;
+                
+                // Random Rotation
+                const rot = Math.random() * 10 - 5;
+                note.style.setProperty('--rot', rot + 'deg');
+                
+                // Random Color from Array
+                const randomColor = noteColors[Math.floor(Math.random() * noteColors.length)];
+                note.style.backgroundColor = randomColor;
+
                 grid.appendChild(note);
             });
         }
 
-        // 5. Rain Hearts (Background)
-        function startRain() {
-            setInterval(() => {
-                const drop = document.createElement('div');
-                drop.innerHTML = '💖';
-                drop.style.position = 'fixed';
-                drop.style.left = Math.random() * 100 + 'vw';
-                drop.style.top = '-50px';
-                drop.style.fontSize = '20px';
-                drop.style.animation = `fall ${Math.random() * 2 + 3}s linear`;
-                document.body.appendChild(drop);
-                
-                setTimeout(() => drop.remove(), 5000);
-            }, 200);
+        // 5. HEART ANIMATION
+        function spawnHeart(isBalloon) {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = ['❤️','💖','💝'][Math.floor(Math.random()*3)];
+            
+            if (isBalloon) {
+                heart.style.left = '50%';
+                heart.style.top = '50%';
+                heart.style.zIndex = '5';
+            } else {
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = '100vh';
+            }
+            
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
         }
-
-        // Add Fall Animation dynamically
-        const style = document.createElement('style');
-        style.innerHTML = `@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }`;
-        document.head.appendChild(style);
 
     </script>
 </body>
