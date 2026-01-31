@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For My Valentine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Caveat:wght@400;700&family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #fce4ec;
             --env-color: #ff5c8a;
             --env-dark: #d6336c;
-            --paper-color: #fffbea; 
-            --line-color: #a2d2ff;
-            --margin-color: #ff9999;
+            --paper-color: #fffbf0; /* Creamy White */
+            --paper-border: #e6d2b5;
         }
 
         body {
@@ -97,45 +96,47 @@
             width: 90%;
             height: 90%;
             background-color: var(--paper-color);
-            /* Lined Paper Pattern */
-            background-image: 
-                linear-gradient(90deg, transparent 39px, var(--margin-color) 40px, transparent 41px),
-                linear-gradient(var(--line-color) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 30px;
+            border: 4px double var(--paper-border); /* Elegant border */
             
             z-index: 2; 
             transition: bottom 0.8s ease-in-out, height 0.8s, transform 0.8s, z-index 0.1s;
             box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            padding: 20px 20px 20px 60px; 
+            padding: 30px; 
             box-sizing: border-box;
             
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
         }
 
-        /* Content hidden initially */
         .letter-content {
             opacity: 0; 
-            transition: opacity 0.5s ease 0.8s; /* Delayed fade in */
+            transition: opacity 0.5s ease 0.8s;
             width: 100%;
             text-align: center;
         }
 
         .letter h2 {
-            font-family: 'Caveat', cursive;
+            font-family: 'Dancing Script', cursive;
             color: #d32f2f;
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin: 0 0 20px 0;
             line-height: 1.2;
         }
         
         .letter p {
-            font-family: 'Caveat', cursive;
-            font-size: 1.5rem;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
             color: #444;
             margin: 10px 0;
+        }
+        
+        .small-text {
+             font-family: 'Poppins', sans-serif;
+             font-size: 1rem;
+             color: #888;
+             margin-top: 20px;
         }
 
         /* --- OPEN ANIMATION --- */
@@ -154,7 +155,7 @@
         }
 
         .open .letter-content {
-            opacity: 1; /* Shows text AND buttons */
+            opacity: 1;
         }
 
         /* --- BUTTONS --- */
@@ -163,7 +164,7 @@
             display: flex;
             gap: 30px;
             justify-content: center;
-            position: relative; /* Keeps them in flow initially */
+            position: relative; 
         }
 
         button {
@@ -201,13 +202,24 @@
         }
 
         .flower-container {
-            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Allows 6 flowers to sit nicely */
+            gap: 20px;
+            max-width: 800px;
+            margin: 30px auto;
         }
+        
         .flower-container img {
-            width: 180px;
-            margin: 0 -20px;
+            width: 120px;
+            height: auto;
             filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
             animation: bloom 1s ease-out backwards;
+            transition: transform 0.3s;
+        }
+        
+        .flower-container img:hover {
+            transform: scale(1.1);
         }
 
         /* NOTE GRID */
@@ -246,13 +258,22 @@
 
         /* Floating Hearts */
         .floating-heart {
-            position: fixed;
-            top: 100vh;
-            font-size: 2rem;
-            animation: floatUp linear forwards;
-            z-index: 0;
+            position: absolute;
+            opacity: 0;
+            animation: floatUp ease-in forwards;
+            z-index: 5; 
+            pointer-events: none;
         }
-        @keyframes floatUp { to { transform: translateY(-110vh) rotate(360deg); } }
+
+        @keyframes floatUp { 
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(-400px) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes rainUp { 
+            to { transform: translateY(-110vh) rotate(360deg); }
+        }
 
     </style>
 </head>
@@ -267,10 +288,10 @@
             
             <div class="letter">
                 <div class="letter-content">
-                    <h2>Dearest,</h2>
-                    <p>I have something to ask you...</p>
+                    <h2>My Dearest,</h2>
+                    <p>I have a very important question...</p>
                     <p><strong>Will you be my Valentine?</strong></p>
-                    <p style="font-size: 1rem; color: #888; margin-top:30px;">(Please say yes!)</p>
+                    <p class="small-text">(Please say yes!)</p>
                     
                     <div class="btn-group">
                         <button id="yesBtn" onclick="celebrate(event)">YES!</button>
@@ -282,12 +303,15 @@
     </div>
 
     <div id="celebration">
-        <h1 style="font-family: 'Caveat'; font-size: 4rem; color: #c92a42;">YAY! I Love You! ❤️</h1>
+        <h1 style="font-family: 'Dancing Script'; font-size: 5rem; color: #c92a42;">YAY! I Love You! ❤️</h1>
         
         <div class="flower-container">
             <img src="https://cdn-icons-png.flaticon.com/512/1808/1808845.png" style="animation-delay: 0.1s">
+            <img src="https://cdn-icons-png.flaticon.com/512/1808/1808826.png" style="animation-delay: 0.2s">
             <img src="https://cdn-icons-png.flaticon.com/512/3460/3460592.png" style="animation-delay: 0.3s">
-            <img src="https://cdn-icons-png.flaticon.com/512/1808/1808826.png" style="animation-delay: 0.5s">
+            <img src="https://cdn-icons-png.flaticon.com/512/3028/3028639.png" style="animation-delay: 0.4s">
+            <img src="https://cdn-icons-png.flaticon.com/512/3028/3028634.png" style="animation-delay: 0.5s">
+            <img src="https://cdn-icons-png.flaticon.com/512/3028/3028628.png" style="animation-delay: 0.6s">
         </div>
 
         <h2 style="font-family: 'Poppins'; color: #555;">100 Reasons Why:</h2>
@@ -296,7 +320,7 @@
 
     <script>
         let isOpen = false;
-        let canRunaway = false; // Lock button until letter is open
+        let canRunaway = false; 
         const envelope = document.getElementById('envelopeWrapper');
         const noBtn = document.getElementById('noBtn');
 
@@ -306,12 +330,11 @@
                 envelope.classList.add('open');
                 isOpen = true;
                 
-                // Spawn Balloon Hearts
-                for(let i=0; i<10; i++){
-                    setTimeout(() => spawnHeart(true), i*200);
+                // Spawn Larger Balloon Hearts (15 of them)
+                for(let i=0; i<15; i++){
+                    setTimeout(() => spawnHeart(true), i * 150);
                 }
 
-                // Unlock the "No" button after the animation finishes (1 second)
                 setTimeout(() => {
                     canRunaway = true;
                 }, 1000);
@@ -321,8 +344,6 @@
         // 2. RUNAWAY NO BUTTON
         function runAway(e) {
             e.stopPropagation();
-
-            // Prevent movement if letter isn't fully open yet
             if (!canRunaway) return;
 
             const windowWidth = window.innerWidth;
@@ -330,7 +351,6 @@
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
 
-            // Calculate safe boundaries
             const maxX = windowWidth - btnWidth - 50;
             const maxY = windowHeight - btnHeight - 50;
 
@@ -342,7 +362,6 @@
             noBtn.style.top = Math.max(20, newY) + 'px';
             noBtn.style.zIndex = '1000';
 
-            // Grow YES button
             const yesBtn = document.getElementById('yesBtn');
             const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
             yesBtn.style.fontSize = (currentSize + 5) + 'px';
@@ -366,23 +385,17 @@
         }
 
         // 4. GENERATE COLORFUL NOTES
-        // ********************************************
-        // EDIT YOUR REASONS HERE
-        // ********************************************
         const myReasons = [
             "Your kindness", "The way you smell", "Your cooking", "Your ambition",
             "Our late night talks", "Your eyes", "How you support me", "Your hugs",
             "Inside jokes", "Your patience", "Your intelligence", "Your style",
             "Your laugh", "The way you dance", "Your voice"
-            // ... Add more!
         ];
 
-        // Filler
         while (myReasons.length < 100) {
             myReasons.push("Reason #" + (myReasons.length + 1) + ": I love you!");
         }
 
-        // Pastel Colors for Notes
         const noteColors = [
             '#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', 
             '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff', '#fffffc'
@@ -394,39 +407,40 @@
                 const note = document.createElement('div');
                 note.classList.add('sticky-note');
                 note.innerText = reason;
-                
-                // Random Rotation
                 const rot = Math.random() * 10 - 5;
                 note.style.setProperty('--rot', rot + 'deg');
-                
-                // Random Color from Array
                 const randomColor = noteColors[Math.floor(Math.random() * noteColors.length)];
                 note.style.backgroundColor = randomColor;
-
                 grid.appendChild(note);
             });
         }
 
-        // 5. HEART ANIMATION
+        // 5. HEART ANIMATION (UPDATED)
         function spawnHeart(isBalloon) {
             const heart = document.createElement('div');
             heart.classList.add('floating-heart');
             heart.innerHTML = ['❤️','💖','💝'][Math.floor(Math.random()*3)];
             
             if (isBalloon) {
-                heart.style.left = '50%';
-                heart.style.top = '50%';
-                heart.style.zIndex = '5';
+                // BALLOON STYLE
+                envelope.appendChild(heart);
+                const randomX = Math.random() * 60 + 20; 
+                heart.style.left = randomX + '%';
+                heart.style.top = '50%'; 
+                heart.style.fontSize = (Math.random() * 2 + 2.5) + 'rem'; 
+                heart.style.animationName = 'floatUp'; 
             } else {
+                // RAIN STYLE
+                document.body.appendChild(heart);
                 heart.style.left = Math.random() * 100 + 'vw';
                 heart.style.top = '100vh';
+                heart.style.position = 'fixed';
+                heart.style.animationName = 'rainUp';
             }
             
             heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 5000);
         }
-
     </script>
 </body>
 </html>
