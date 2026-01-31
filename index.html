@@ -1,299 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Vaishnavi ❤️</title>
-<style>
-body {
-  margin:0;
-  background:#ffd6e0;
-  font-family:Georgia, serif;
-  text-align:center;
-  overflow-x:hidden;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Valentine</title>
+    <style>
+        /* --- General Styles --- */
+        body {
+            background-color: #f7d9da; /* Light pink background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden; /* Prevent scrollbars during animation */
+            transition: background-color 1s;
+        }
 
-/* Floating hearts */
-.heart {
-  position:fixed;
-  bottom:-20px;
-  font-size:20px;
-  animation:float 6s linear infinite;
-}
-@keyframes float {
-  from { transform: translateY(0); opacity:1;}
-  to { transform: translateY(-900px); opacity:0;}
-}
+        /* --- Envelope Styles --- */
+        .container {
+            position: relative;
+            cursor: pointer;
+        }
 
-/* Envelope container */
-.envelope-wrapper {
-  margin-top:100px;
-  width:320px;
-  height:220px;
-  margin-left:auto;
-  margin-right:auto;
-  position:relative;
-  perspective:1000px;
-}
+        .envelope-wrapper {
+            background: #f7d9da;
+            height: 200px;
+            width: 300px;
+            position: relative;
+        }
 
-/* Envelope body */
-.envelope-body {
-  position:relative;
-  width:100%;
-  height:100%;
-  background:#f497b6;
-  border-radius:6px;
-  box-shadow:0 5px 15px rgba(0,0,0,0.2);
-  overflow:hidden;
-}
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background-color: #ff3333; /* Red envelope base */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
 
-/* Flap */
-.envelope-flap {
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:50%;
-  background:#f0809a;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  transform-origin: top center;
-  transition: transform 1s ease;
-  z-index:3;
-}
+        /* The Triangle Flaps */
+        .envelope::before { /* Left flap */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-top: 100px solid transparent;
+            border-left: 150px solid #e60000;
+            border-bottom: 100px solid #e60000;
+            z-index: 3;
+        }
 
-/* Letter inside envelope */
-.letter {
-  position:absolute;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%) translateY(0);
-  width:280px;
-  height:160px;
-  background:#fffaf0;
-  border-radius:6px;
-  box-shadow:0 10px 20px rgba(0,0,0,0.15);
-  padding:20px;
-  font-size:18px;
-  opacity:0;
-  transition: all 1s ease;
-  z-index:2;
-}
+        .envelope::after { /* Right flap */
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-top: 100px solid transparent;
+            border-right: 150px solid #cc0000;
+            border-bottom: 100px solid #cc0000;
+            z-index: 3;
+        }
 
-/* Open envelope */
-.envelope.open .envelope-flap { transform: rotateX(-180deg); }
-.envelope.open .letter { opacity:1; transform:translateX(-50%) translateY(-180px); }
+        /* The Top Flap (The one that opens) */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #ff3333; /* Matches envelope color */
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+            z-index: 4;
+        }
 
-/* Expanded letter */
-#expanded-letter {
-  position:fixed;
-  inset:0;
-  background:#ffd6e0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  display:none;
-}
-.paper {
-  background:#fffaf0;
-  padding:50px;
-  max-width:600px;
-  border-radius:15px;
-  box-shadow:0 30px 60px rgba(0,0,0,0.2);
-}
+        /* The Letter inside */
+        .letter {
+            position: absolute;
+            top: 10px;
+            left: 25px;
+            width: 250px;
+            height: 180px;
+            background-color: white;
+            text-align: center;
+            transition: transform 0.6s ease-in-out, z-index 0.2s;
+            z-index: 2; /* Starts inside envelope */
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-/* Buttons */
-button {
-  margin-top:25px;
-  padding:12px 30px;
-  border:none;
-  border-radius:25px;
-  background:#ff4d6d;
-  color:white;
-  font-size:18px;
-  cursor:pointer;
-}
-.buttons { position:relative; height:120px; }
+        .letter p {
+            font-size: 1.2rem;
+            color: #d62828;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
 
-/* Celebration / bouquet */
-#celebration { display:none; }
-.bouquet {
-  position:relative;
-  display:inline-block;
-  width:200px;
-  height:300px;
-  margin:40px auto;
-}
-.bouquet svg { position:absolute; bottom:0; width:100%; height:100%; }
+        /* --- Open Animation State --- */
+        .open .flap {
+            transform: rotateX(180deg);
+            z-index: 1; /* Goes behind the letter */
+        }
 
-/* Reasons letters */
-.reasons-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:20px;
-  max-width:900px;
-  margin:40px auto;
-}
-.reason-card {
-  background:#fffaf0;
-  padding:20px;
-  border-radius:8px;
-  box-shadow:0 10px 20px rgba(0,0,0,0.15);
-  font-size:14px;
-  opacity:0;
-  transform:translateY(20px) rotate(var(--r));
-  animation: popIn 0.6s forwards;
-}
-@keyframes popIn { to { opacity:1; transform:translateY(0) rotate(var(--r)); } }
-</style>
+        .open .letter {
+            transform: translateY(-100px); /* Slides up */
+            z-index: 5; /* Comes to front */
+        }
+
+        /* --- Buttons --- */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #yesBtn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #noBtn {
+            background-color: #dc3545;
+            color: white;
+            position: relative; /* Needed for movement */
+        }
+
+        /* --- Phase 2: Success / Flowers / List --- */
+        #celebration {
+            display: none; /* Hidden initially */
+            text-align: center;
+            width: 100%;
+            height: 100vh;
+            overflow-y: scroll; /* Allow scrolling for the list */
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Tulips CSS */
+        .bouquet {
+            position: relative;
+            height: 200px;
+            width: 200px;
+            margin: 50px auto;
+        }
+
+        .flower {
+            position: absolute;
+            bottom: 0;
+            width: 40px;
+            height: 40px;
+            background: #ff69b4;
+            border-radius: 50% 50% 10% 50%;
+            transform: rotate(-45deg);
+        }
+
+        .stem {
+            position: absolute;
+            width: 4px;
+            height: 100px;
+            background: green;
+            bottom: -80px;
+            left: 18px;
+            transform: rotate(45deg);
+            z-index: -1;
+        }
+        
+        /* Positioning multiple flowers to make a bouquet */
+        .f1 { left: 80px; transform: rotate(-45deg); }
+        .f2 { left: 40px; transform: rotate(-65deg); background: #ff1493; }
+        .f3 { left: 120px; transform: rotate(-25deg); background: #ff1493; }
+
+        .reason-list {
+            list-style: none;
+            padding: 0;
+            color: #d62828;
+            font-size: 1.2rem;
+            margin-top: 100px;
+        }
+        
+        .reason-list li {
+            padding: 10px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hearts Background */
+        .heart {
+            position: fixed;
+            top: -10vh;
+            color: #ff3333;
+            font-size: 20px;
+            animation: fall linear forwards;
+            z-index: -1;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh); }
+        }
+
+    </style>
 </head>
 <body>
 
-<div id="hearts"></div>
+    <div class="container" id="envelope-container" onclick="openEnvelope()">
+        <div class="envelope-wrapper">
+            <div class="envelope">
+                <div class="flap"></div>
+                <div class="letter">
+                    <p>Will you be my Valentine?</p>
+                    <div class="btn-group">
+                        <button id="yesBtn" onclick="showLove(event)">Yes</button>
+                        <button id="noBtn" onmouseover="moveNoButton()">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<!-- Envelope -->
-<div class="envelope-wrapper" id="envelope-wrapper">
-  <div class="envelope" id="envelope">
-    <div class="envelope-body"></div>
-    <div class="envelope-flap"></div>
-    <div class="letter" id="letter">Will you be my Valentine? 💖</div>
-  </div>
-</div>
+    <div id="celebration">
+        <h1>I knew you'd say Yes! ❤️</h1>
+        
+        <div class="bouquet">
+            <div class="flower f1"><div class="stem"></div></div>
+            <div class="flower f2"><div class="stem"></div></div>
+            <div class="flower f3"><div class="stem"></div></div>
+        </div>
 
-<!-- Expanded letter -->
-<div id="expanded-letter">
-  <div class="paper">
-    <h1>Vaishnavi ❤️</h1>
-    <p>
-      From the moment you came into my life,<br><br>
-      everything started feeling lighter, warmer,<br>
-      and more meaningful.<br><br>
-      You are my calm, my happiness,<br>
-      and my favorite part of every day.<br><br>
-      Will you be my Valentine? 💌
-    </p>
-    <button onclick="goToChoice()">Continue 💕</button>
-  </div>
-</div>
+        <h2>100 Reasons Why I Love You</h2>
+        <ul id="reasons" class="reason-list">
+            </ul>
+    </div>
 
-<!-- YES / NO -->
-<div id="choice" style="display:none;">
-  <h1>Will you be my Valentine? 💘</h1>
-  <div class="buttons">
-    <button id="yesBtn" onclick="sayYes()">YES 💕</button>
-    <button id="noBtn">NO 😛</button>
-  </div>
-</div>
+    <script>
+        let isOpen = false;
 
-<!-- Celebration -->
-<div id="celebration">
-  <h1>You said YES 😭💖</h1>
-  <div class="bouquet" id="bouquet">
-    <!-- Jar -->
-    <svg viewBox="0 0 64 128">
-      <rect x="16" y="64" width="32" height="64" rx="6" ry="6" fill="#c0e0ff" opacity="0.5"/>
-    </svg>
-    <!-- Tulip -->
-    <svg viewBox="0 0 64 128">
-      <path d="M32 16 C24 32,24 64,32 80 C40 64,40 32,32 16" fill="#ff6f91"/>
-      <rect x="30" y="80" width="4" height="48" fill="#2d6a4f"/>
-    </svg>
-    <!-- Rose -->
-    <svg viewBox="0 0 64 128">
-      <circle cx="32" cy="24" r="12" fill="#ff4d6d"/>
-      <rect x="30" y="36" width="4" height="72" fill="#2d6a4f"/>
-    </svg>
-    <!-- Carnation -->
-    <svg viewBox="0 0 64 128">
-      <circle cx="32" cy="20" r="10" fill="#ffc8dd"/>
-      <rect x="30" y="30" width="4" height="78" fill="#2d6a4f"/>
-    </svg>
-  </div>
-  <h2>100 Reasons Why I Love You</h2>
-  <div class="reasons-grid" id="reasons"></div>
-</div>
+        // 1. Open Envelope
+        function openEnvelope() {
+            if (!isOpen) {
+                document.querySelector('.container').classList.add('open');
+                isOpen = true;
+            }
+        }
 
-<script>
-const envelope=document.getElementById("envelope");
-const letter=document.getElementById("letter");
-const envelopeWrapper=document.getElementById("envelope-wrapper");
-const expandedLetter=document.getElementById("expanded-letter");
-const choice=document.getElementById("choice");
-const celebration=document.getElementById("celebration");
-const noBtn=document.getElementById("noBtn");
-const yesBtn=document.getElementById("yesBtn");
+        // 2. Make "No" button run away & "Yes" grow
+        function moveNoButton() {
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            
+            // Random position limited to screen width/height logic
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
 
-let yesScale=1;
+            // Make Yes button bigger
+            let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = `${currentSize + 5}px`;
+        }
 
-// Envelope click → flap opens + letter slides up
-envelope.addEventListener("click",()=>{
-  envelope.classList.add("open");
-  startHearts();
-});
+        // 3. Show Success Screen
+        function showLove(event) {
+            event.stopPropagation(); // Stop click from toggling envelope
+            
+            // Hide envelope, show celebration
+            document.getElementById('envelope-container').style.display = 'none';
+            document.getElementById('celebration').style.display = 'block';
+            document.body.style.overflow = 'auto'; // Enable scrolling
 
-// Click letter → expand letter & hide envelope
-letter.addEventListener("click",(e)=>{
-  e.stopPropagation();
-  envelopeWrapper.style.display="none";
-  expandedLetter.style.display="flex";
-});
+            // Start falling hearts
+            createHearts();
 
-// Continue → YES/NO choice
-function goToChoice(){
-  expandedLetter.style.display="none";
-  choice.style.display="block";
-}
+            // Populate the list
+            printReasons();
+        }
 
-// NO button moves away, YES grows
-function moveNoButton(){
-  const x=Math.random()*(window.innerWidth-100);
-  const y=Math.random()*(window.innerHeight-100);
-  noBtn.style.position="fixed";
-  noBtn.style.left=x+"px";
-  noBtn.style.top=y+"px";
-  yesScale+=0.12;
-  yesBtn.style.transform=`scale(${yesScale})`;
-}
-noBtn.addEventListener("mouseenter",moveNoButton);
-noBtn.addEventListener("mousemove",moveNoButton);
+        // 4. Create Falling Hearts
+        function createHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+                document.body.appendChild(heart);
+                
+                // Remove heart after animation to keep DOM clean
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 300);
+        }
 
-// YES clicked → show bouquet + hearts + 100 reasons
-function sayYes(){
-  choice.style.display="none";
-  celebration.style.display="block";
-  showReasons();
-}
+        // 5. The 100 Reasons
+        const reasonsList = [
+            "Your smile lights up my day",
+            "You make the best coffee",
+            "Your laugh is contagious",
+            "You always know how to cheer me up",
+            // ... Add more reasons here in the code ...
+            "You are my best friend",
+            "I love your sense of style",
+            "You are incredibly smart",
+            "You have the kindest heart",
+            "Being with you feels like home",
+            "I love building a future with you"
+        ];
+        
+        // Fill the rest up to 100 for the demo (You should edit the array above!)
+        while (reasonsList.length < 100) {
+            reasonsList.push("Reason #" + (reasonsList.length + 1) + ": I just love everything about you!");
+        }
 
-// Floating hearts
-function startHearts(){
-  setInterval(()=>{
-    const heart=document.createElement("div");
-    heart.className="heart";
-    heart.innerHTML="❤️";
-    heart.style.left=Math.random()*100+"vw";
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),6000);
-  },300);
-}
-
-// 100 reasons
-function showReasons(){
-  const container=document.getElementById("reasons");
-  const baseReasons=[
-    "You make me feel safe",
-    "You believe in me",
-    "Your smile fixes everything",
-    "You’re my calm",
-    "You make ordinary days special"
-  ];
-  for(let i=1;i<=100;i++){
-    const card=document.createElement("div");
-    card.className="reason-card";
-    card.style.setProperty("--r",`${Math.random()*6-3}deg`);
-    card.style.animationDelay=`${i*0.04}s`;
-    card.textContent=`Reason ${i}: ${baseReasons[i % baseReasons.length]}`;
-    container.appendChild(card);
-  }
-}
-</script>
+        function printReasons() {
+            const ul = document.getElementById('reasons');
+            reasonsList.forEach((reason, index) => {
+                const li = document.createElement('li');
+                li.textContent = reason;
+                // Stagger animation
+                li.style.animationDelay = `${index * 0.1}s`;
+                ul.appendChild(li);
+            });
+        }
+    </script>
 </body>
 </html>
-
