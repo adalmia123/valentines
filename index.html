@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Be My Valentine?</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Caveat:wght@400;700&family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #ffe6ea;
@@ -38,7 +38,8 @@
             transition: transform 0.3s ease;
         }
 
-        .container:hover { transform: scale(1.02); }
+        /* Only allow hover scale when class is present */
+        .container.hoverable:hover { transform: scale(1.02); }
 
         .envelope { position: relative; width: 100%; height: 100%; }
 
@@ -75,7 +76,7 @@
             transform-origin: top; transition: transform 0.6s ease-in-out; z-index: 4; 
         }
 
-        /* --- CUES ("Open Me") --- */
+        /* --- "OPEN ME" CUES --- */
         .hint-text {
             position: absolute;
             font-family: 'Indie Flower', cursive;
@@ -94,22 +95,36 @@
             to { transform: scale(1.1) rotate(var(--r)); opacity: 1; }
         }
 
-        /* --- LETTER TEXT --- */
+        /* --- LETTER TEXT (Updated for Readability) --- */
         .letter h2 {
             font-family: 'Dancing Script', cursive;
             color: #d32f2f;
-            font-size: 1.8rem;
-            margin: 5px 0 10px 0;
+            font-size: 2rem;
+            margin: 5px 0 15px 0;
         }
         
         .letter p {
-            font-family: 'Caveat', cursive;
-            font-size: 1.1rem;
+            font-family: 'Indie Flower', cursive; /* More readable handwriting */
+            font-size: 1.25rem;
             color: #444;
-            margin: 3px 0;
-            line-height: 1.2;
+            margin: 0 0 15px 0;
+            line-height: 1.4;
+            font-weight: 600;
         }
         
+        /* Highlighted Adjectives */
+        .highlight {
+            font-weight: bold;
+            padding: 0 3px;
+            border-radius: 4px;
+        }
+        .h-amazing { color: #e63946; background: #ffe5ec; }
+        .h-beautiful { color: #fb5607; background: #fff0db; }
+        .h-cute { color: #ff006e; background: #ffe3fa; }
+        .h-kind { color: #8338ec; background: #f2e6ff; }
+        .h-smart { color: #3a86ff; background: #e0edff; }
+        .h-baddie { color: #ffbe0b; background: #fffde0; }
+
         .letter-content { opacity: 0; transition: opacity 0.5s ease 0.5s; }
 
         .open .lid { transform: rotateX(180deg); z-index: 0; }
@@ -118,14 +133,14 @@
         .letter.full-mode {
             position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(1.2) !important; 
-            width: 400px; height: 550px; z-index: 1000;
+            width: 450px; height: 620px; z-index: 1000;
             box-shadow: 0 20px 60px rgba(0,0,0,0.4); border-radius: 10px;
             padding: 40px 30px;
         }
         .letter.full-mode .letter-content { opacity: 1; }
 
         /* Buttons */
-        .btn-group { margin-top: 30px; display: flex; gap: 20px; justify-content: center; }
+        .btn-group { margin-top: 20px; display: flex; gap: 20px; justify-content: center; }
         button {
             padding: 12px 35px; font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 16px;
             border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -184,15 +199,12 @@
 
         /* --- MOBILE ADJUSTMENTS --- */
         @media (max-width: 600px) {
-            /* Fix clipping by scaling down and adding margin */
             .container { transform: scale(0.85); margin-top: 50px; }
             .hint-text { font-size: 1rem; }
-            .hint-1 { top: -50px; left: -20px; }
-            .hint-2 { bottom: -40px; right: -10px; }
             
-            .letter.full-mode { width: 85vw; height: 65vh; padding: 20px; }
-            .letter h2 { font-size: 2rem; }
-            .letter p { font-size: 1rem; }
+            .letter.full-mode { width: 90vw; height: 75vh; padding: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1) !important;}
+            .letter h2 { font-size: 1.8rem; margin-bottom: 10px;}
+            .letter p { font-size: 1rem; margin-bottom: 10px; }
             
             .header-area h1 { font-size: 2.5rem; }
             .header-area h2 { font-size: 0.9rem; }
@@ -219,7 +231,7 @@
 </head>
 <body>
 
-    <div class="container" id="container" onclick="openEnvelope()">
+    <div class="container hoverable" id="container" onclick="openEnvelope()">
         <div class="hint-text hint-1" style="--r: -15deg">Open me! 💌</div>
         <div class="hint-text hint-2" style="--r: 10deg">What's inside? 👀</div>
 
@@ -228,11 +240,16 @@
             <div class="letter" id="letter">
                 <div class="letter-content">
                     <h2>To the love of my life,</h2>
-                    <p>You make my life so meaningful, and I'm the luckiest guy in the world.</p>
-                    <p>I love you wholeheartedly, and I can't wait for our life together and many more Valentines.</p>
-                    <p>You are my amazing, beautiful, cute, kind, smart, baddie princess, and I love you.</p>
-                    <p><strong>Will you be my Valentine?</strong></p>
-                    <p style="font-size: 0.8rem; color: #888; margin-top: 10px;">(P.S. I promise to buy you flowers!)</p>
+                    
+                    <p>You make my life so incredibly meaningful, and I truly believe I am the luckiest guy in the world just to be by your side.</p>
+                    
+                    <p>I love you wholeheartedly, and I can't wait for everything our future holds—building a life together and celebrating a million more Valentines.</p>
+                    
+                    <p>You are my <span class="highlight h-amazing">amazing</span>, <span class="highlight h-beautiful">beautiful</span>, <span class="highlight h-cute">cute</span>, <span class="highlight h-kind">kind</span>, <span class="highlight h-smart">smart</span>, <span class="highlight h-baddie">baddie</span> princess.</p>
+                    
+                    <p>So, I have a question...</p>
+                    
+                    <h2>Will you be my Valentine?</h2>
                     
                     <div class="btn-group">
                         <button id="yesBtn" onclick="celebrate(event)">YES!</button>
@@ -276,6 +293,8 @@
         function openEnvelope() {
             if (!isOpen) {
                 container.classList.add('open');
+                // REMOVE HOVER EFFECT to prevent jitter when chasing 'No'
+                container.classList.remove('hoverable'); 
                 isOpen = true;
                 document.querySelectorAll('.hint-text').forEach(el => el.style.display = 'none');
                 
@@ -444,8 +463,8 @@
             function drawHeartHead(x, y, size) {
                 ctx.save();
                 ctx.translate(x, y);
-                // 4x Size: Changed multiplier from 40 to 120
-                const s = size * 120; 
+                // 2.8x Size (Base 30 * 2.8 approx 85)
+                const s = size * 85; 
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(-s/2, -s/2, -s, s/3, 0, s);
@@ -467,8 +486,7 @@
                     
                     if (type === 'heart') {
                         this.palette = {base:'red',mid:'red',tip:'red'};
-                        // Make heart flower taller
-                        this.maxHeight = 350; 
+                        this.maxHeight = 350; // Tallest
                     } else if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
                     else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
                     else this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
@@ -483,11 +501,10 @@
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
-                    // More Leaves logic: Loop up the stem
+                    // Sparse Leaves: Every 80px
                     if (this.height > 50) {
-                        for(let h=50; h<this.height; h+=40) {
-                            // Alternate sides
-                            const dir = (h % 80 === 0) ? 1 : -1;
+                        for(let h=50; h<this.height; h+=80) {
+                            const dir = (h % 160 === 0) ? 1 : -1;
                             drawComplexPetal(this.x, this.originalY - h, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, dir*1.5, 0);
                         }
                     }
@@ -522,7 +539,6 @@
             const types = ['rose', 'tulip', 'carnation'];
             const screenCenter = window.innerWidth / 2;
             
-            // Separate arrays
             const gardenFlowers = [];
             let heartFlower = null;
 
@@ -530,7 +546,6 @@
                 const depthY = Math.random() * 60; 
                 let type = types[Math.floor(Math.random()*types.length)];
                 
-                // Identify the center flower
                 if (Math.abs(i - screenCenter) < 10 && !heartFlower) {
                     type = 'heart';
                     heartFlower = new Flower(i, canvas.height + 20, type);
@@ -541,13 +556,8 @@
 
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw normal flowers first
                 gardenFlowers.forEach(f => f.update());
-                
-                // Draw Heart Flower LAST so it is on top
                 if(heartFlower) heartFlower.update();
-                
                 requestAnimationFrame(animate);
             }
             animate();
