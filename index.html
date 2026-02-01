@@ -65,20 +65,25 @@
             align-items: center; 
             text-align: center;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            
-            /* Transitions for the smooth center animation */
-            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
-            transform-origin: center center;
+            transform-origin: center top; /* Important for scaling */
         }
 
-        /* Mode 1: Sliding UP out of the envelope */
+        /* PHASE 1: Sliding UP inside the envelope */
         .letter.sliding {
-            transform: translateY(-180px);
+            transition: transform 0.6s ease-out;
+            transform: translateY(-150px);
             z-index: 5;
         }
 
-        /* Mode 2: Centered on screen */
-        .letter.centered {
+        /* PHASE 3: Zooming to Center */
+        .letter.zooming {
+            transition: 
+                top 0.8s ease-in-out,
+                left 0.8s ease-in-out,
+                width 0.8s ease-in-out,
+                height 0.8s ease-in-out,
+                transform 0.8s ease-in-out;
+            
             box-shadow: 0 20px 60px rgba(0,0,0,0.4);
             border-radius: 10px;
             z-index: 2000 !important;
@@ -113,7 +118,7 @@
         .hint-2 { bottom: -50px; right: -30px; transform: rotate(10deg); }
         @keyframes pulseText { from { transform: scale(1) rotate(var(--r)); opacity: 0.8; } to { transform: scale(1.1) rotate(var(--r)); opacity: 1; } }
 
-        /* LETTER TEXT */
+        /* LETTER CONTENT TEXT */
         .letter-content {
             opacity: 0;
             width: 100%;
@@ -124,12 +129,11 @@
             align-items: center;
             transition: opacity 0.5s ease 0.5s; 
         }
-        .letter.centered .letter-content { opacity: 1; }
+        .letter.zooming .letter-content { opacity: 1; }
 
         .letter h2 { font-family: 'Dancing Script', cursive; color: #d32f2f; font-size: 2rem; margin: 0 0 15px 0; }
         .letter p { font-family: 'Indie Flower', cursive; font-size: 1.15rem; color: #444; margin: 0 0 12px 0; line-height: 1.3; font-weight: 600; }
         
-        /* Highlight Classes - Reused in Letter AND Note Cards */
         .highlight { font-weight: bold; padding: 0 4px; border-radius: 4px; }
         .h-amazing { color: #e63946; background: #ffe5ec; }
         .h-beautiful { color: #fb5607; background: #fff0db; }
@@ -137,8 +141,6 @@
         .h-kind { color: #8338ec; background: #f2e6ff; }
         .h-smart { color: #3a86ff; background: #e0edff; }
         .h-baddie { color: #ffbe0b; background: #fffde0; }
-        /* Generic highlight for carousel */
-        .h-gen { color: #d6336c; background: #ffe6ea; }
 
         .btn-group { margin-top: 15px; display: flex; gap: 15px; justify-content: center; width: 100%; position: relative; }
         button {
@@ -185,13 +187,15 @@
             gap: 15px; padding: 10px 40px; height: 100%; box-sizing: border-box;
         }
         .note-card {
-            width: 200px; height: 140px; background: rgba(255, 255, 255, 0.85); border: 1px solid white;
+            width: 200px; height: 140px; 
+            /* Note color will be set by JS via background-color */
+            border: 2px solid rgba(255,255,255,0.6);
             border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            display: flex; align-items: center; justify-content: center; padding: 10px;
+            display: flex; align-items: center; justify-content: center; padding: 15px;
             font-family: 'Indie Flower', cursive; font-size: 1.1rem; color: #444; text-align: center;
             transition: transform 0.3s; cursor: pointer;
         }
-        .note-card:hover { transform: scale(1.05); z-index: 40; background: white;}
+        .note-card:hover { transform: scale(1.05); z-index: 40; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
         #garden { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; z-index: 10; pointer-events: none; }
 
@@ -200,8 +204,7 @@
             .container { transform: scale(0.85); margin-top: 60px; }
             .hint-text { font-size: 1rem; }
             
-            /* Letter full mode adjustment for mobile */
-            .letter.centered { width: 90vw !important; height: 75vh !important; }
+            .letter.zooming { width: 90vw !important; height: 75vh !important; }
             .letter h2 { font-size: 1.8rem; margin-bottom: 10px;}
             .letter p { font-size: 1rem; margin-bottom: 10px; }
             
@@ -296,25 +299,37 @@
                 isOpen = true;
                 document.querySelectorAll('.hint-text').forEach(el => el.style.display = 'none');
                 
-                // STEP 1: Slide UP
+                // PHASE 1: Slide UP (Inside Envelope)
                 letter.classList.add('sliding');
 
-                // STEP 2: Detach and Center
+                // PHASE 2 & 3: Detach and Zoom
                 setTimeout(() => {
+                    // Capture current position (where it slid to)
                     const rect = letter.getBoundingClientRect();
+                    
+                    // FREEZE: Set to fixed at exact current pixel coordinates
                     letter.style.position = 'fixed';
                     letter.style.top = rect.top + 'px';
                     letter.style.left = rect.left + 'px';
                     letter.style.width = rect.width + 'px';
                     letter.style.height = rect.height + 'px';
-                    letter.style.transform = 'none'; 
                     
+                    // Remove the transform relative to envelope
+                    letter.style.transform = 'none'; 
+                    letter.classList.remove('sliding'); // Stop sliding class
+                    
+                    // Force Reflow (Crucial for browser to register the freeze)
                     void letter.offsetWidth; 
 
+                    // PHASE 3: ANIMATE TO CENTER
+                    letter.classList.add('zooming');
+                    
+                    // Set final centered coordinates
                     letter.style.top = '50%';
                     letter.style.left = '50%';
                     letter.style.transform = 'translate(-50%, -50%)';
                     
+                    // Responsive Scaling
                     if (window.innerWidth < 600) {
                         letter.style.width = '90vw';
                         letter.style.height = '75vh';
@@ -323,9 +338,8 @@
                         letter.style.height = '620px';
                     }
                     
-                    letter.classList.add('centered');
                     canRunaway = true;
-                }, 600); 
+                }, 600); // Wait for slide to finish
                 
                 for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
             }
@@ -376,6 +390,7 @@
         }
 
         // --- 100 CUSTOM REASONS ---
+        // Array contains raw HTML for highlighting
         const myReasons = [
             "Reason 1: You make me a <span class='highlight h-better'>better</span> person every single day.",
             "Reason 2: I get lost in your <span class='highlight h-smart'>mesmerizing</span> eyes.",
@@ -479,6 +494,7 @@
             "Reason 100: I love you more than words can say."
         ];
         
+        // Pastel colors for cards
         const cardColors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#FDFD96', '#FFFACD', '#C3B1E1'];
 
         function generateReasons() {
@@ -486,10 +502,18 @@
             myReasons.forEach((reason) => {
                 const card = document.createElement('div');
                 card.classList.add('note-card');
-                // Use innerHTML so the spans render correctly
-                card.innerHTML = reason;
+                
+                // 1. Remove HTML tags for clean card text
+                const cleanText = reason.replace(/<[^>]*>/g, '');
+                card.innerText = cleanText;
+                
+                // 2. Apply Pastel Background
                 const color = cardColors[Math.floor(Math.random() * cardColors.length)];
-                card.style.borderTop = `5px solid ${color}`;
+                card.style.backgroundColor = color;
+                
+                // 3. Optional: Make background slightly transparent for glass effect
+                // card.style.background = `rgba(${hexToRgb(color)}, 0.8)`;
+                
                 track.appendChild(card);
             });
         }
@@ -602,7 +626,8 @@
                     
                     if (type === 'heart') {
                         this.palette = {base:'red',mid:'red',tip:'red'};
-                        this.maxHeight = canvas.height - 180; // Shorter to avoid overlapping carousel
+                        // REDUCED HEIGHT for Heart
+                        this.maxHeight = canvas.height - 180; 
                     } else if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
                     else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
                     else this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
@@ -617,13 +642,12 @@
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
-                    // Leaves every 80px with variance
+                    // Leaves with Variance
                     if (this.height > 50) {
                         for(let h=50; h<this.height; h+=80) {
                             const dir = (h % 160 === 0) ? 1 : -1;
-                            // Random angle variance for leaves
                             const angleVariance = (Math.random() * 0.5) - 0.25; 
-                            drawComplexPetal(this.x, this.originalY - h, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, (dir*1.5) + angleVariance, 0);
+                            drawComplexPetal(this.x, this.originalY - h, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, (dir*1.5)+angleVariance, 0);
                         }
                     }
 
