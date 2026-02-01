@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Be My Valentine?</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Caveat:wght@400;700&family=Indie+Flower&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -10,6 +10,7 @@
             --bg-color: #ffe6ea;
             --env-color: #ff5c8a;      
             --env-dark: #d6336c;       
+            --env-flap-dark: #ff4075; /* Slightly darker for top flap */
             --env-inside: #880e4f;     
             --paper-color: #fffbf0;    
             --paper-line: #e6d2b5;     
@@ -24,6 +25,8 @@
             margin: 0;
             font-family: 'Poppins', sans-serif;
             overflow: hidden; 
+            /* Prevent mobile bounce */
+            overscroll-behavior: none;
         }
 
         /* --- ENVELOPE CONTAINER --- */
@@ -33,9 +36,11 @@
             height: 260px;
             cursor: pointer;
             z-index: 10;
+            /* Smooth scaling for hover */
+            transition: transform 0.3s ease;
         }
 
-        .container:hover { transform: scale(1.02); transition: transform 0.3s; }
+        .container:hover { transform: scale(1.02); }
 
         .envelope { position: relative; width: 100%; height: 100%; }
 
@@ -61,37 +66,19 @@
         }
 
         .flap { position: absolute; }
-        
-        /* Adjusted Geometry for less "stretch" */
-        .flap.left { top: 0; left: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-left: 240px solid var(--env-color); }
-        .flap.right { top: 0; right: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-right: 240px solid var(--env-color); }
-        .flap.bottom { bottom: 0; left: 0; border-left: 200px solid transparent; border-right: 200px solid transparent; border-bottom: 145px solid var(--env-dark); border-radius: 0 0 10px 10px; }
+        .flap.left { top: 0; left: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-left: 220px solid var(--env-color); }
+        .flap.right { top: 0; right: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-right: 220px solid var(--env-color); }
+        .flap.bottom { bottom: 0; left: 0; border-left: 200px solid transparent; border-right: 200px solid transparent; border-bottom: 150px solid var(--env-dark); border-radius: 0 0 10px 10px; }
 
+        /* TOP LID (Darker Color) */
         .lid {
             position: absolute; top: 0; left: 0; width: 0; height: 0;
-            /* Flattened the top triangle slightly */
-            border-left: 200px solid transparent; border-right: 200px solid transparent; border-top: 140px solid var(--env-color); 
+            border-left: 200px solid transparent; border-right: 200px solid transparent; 
+            border-top: 140px solid var(--env-flap-dark); /* Darker Color Here */
             transform-origin: top; transition: transform 0.6s ease-in-out; z-index: 4; 
         }
 
-        /* --- "OPEN ME" CUES --- */
-        .hint-text {
-            position: absolute;
-            font-family: 'Indie Flower', cursive;
-            color: #d6336c;
-            font-size: 1.2rem;
-            pointer-events: none;
-            animation: pulseText 1.5s infinite alternate;
-            white-space: nowrap;
-        }
-        .hint-1 { top: -60px; left: -40px; transform: rotate(-15deg); }
-        .hint-2 { bottom: -50px; right: -30px; transform: rotate(10deg); }
-        
-        @keyframes pulseText {
-            from { transform: scale(1) rotate(var(--r)); opacity: 0.8; }
-            to { transform: scale(1.1) rotate(var(--r)); opacity: 1; }
-        }
-
+        /* --- LETTER CONTENT --- */
         .letter h2 { font-family: 'Dancing Script', cursive; color: #d32f2f; font-size: 2.5rem; margin: 5px 0 15px 0; }
         .letter p { font-family: 'Caveat', cursive; font-size: 1.5rem; color: #444; margin: 5px 0; line-height: 1.2; }
         .letter-content { opacity: 0; transition: opacity 0.5s ease 0.5s; }
@@ -107,21 +94,17 @@
         }
         .letter.full-mode .letter-content { opacity: 1; }
 
-        /* Buttons */
         .btn-group { margin-top: 40px; display: flex; gap: 20px; justify-content: center; }
         button {
             padding: 12px 35px; font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 16px;
             border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease; 
-            /* Fix mobile blue box */
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
+            transition: all 0.3s ease; -webkit-tap-highlight-color: transparent;
         }
         #yesBtn { background-color: #ff4d6d; color: white; }
-        #noBtn { background-color: #e0e0e0; color: #333; position: relative; transition: top 0.3s ease, left 0.3s ease; }
+        #noBtn { background-color: #e0e0e0; color: #333; position: relative; transition: top 0.4s ease, left 0.4s ease; }
         #yesBtn:hover { transform: scale(1.1); }
 
-        /* --- CELEBRATION LAYOUT --- */
+        /* --- CELEBRATION PAGE --- */
         #celebration {
             display: none;
             width: 100%; height: 100vh;
@@ -133,7 +116,9 @@
 
         .header-area {
             position: absolute; top: 20px; width: 100%; text-align: center; z-index: 20;
+            display: flex; justify-content: center; align-items: center; gap: 20px;
         }
+        .header-area .text-container { display: flex; flex-direction: column; align-items: center; }
         .header-area h1 {
             font-family: 'Dancing Script', cursive; font-size: 4rem; color: #c92a42;
             text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); margin: 0;
@@ -144,24 +129,24 @@
             display: inline-block; padding: 5px 15px; border-radius: 20px;
         }
 
-        /* SIDE HEARTS */
-        .side-heart {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            font-size: 4rem; color: #ff4d6d;
-            animation: pulseHeart 1s infinite alternate;
-            z-index: 15;
+        /* SIDE PULSING HEARTS (CSS) */
+        .pulsing-heart {
+            width: 50px; height: 50px; background-color: #ff4d6d;
+            transform: rotate(-45deg); animation: pulse 1s infinite alternate;
+            position: relative;
         }
-        .side-left { left: 20px; }
-        .side-right { right: 20px; }
-        
-        @keyframes pulseHeart {
-            from { transform: translateY(-50%) scale(1); }
-            to { transform: translateY(-50%) scale(1.2); }
+        .pulsing-heart::before, .pulsing-heart::after {
+            content: ""; position: absolute; width: 50px; height: 50px;
+            background-color: #ff4d6d; border-radius: 50%;
         }
+        .pulsing-heart::before { top: -25px; left: 0; }
+        .pulsing-heart::after { left: 25px; top: 0; }
+
+        @keyframes pulse { from { transform: rotate(-45deg) scale(1); } to { transform: rotate(-45deg) scale(1.2); } }
 
         /* CAROUSEL */
         .carousel-container {
-            position: absolute; top: 150px; width: 100%; height: 400px;
+            position: absolute; top: 160px; width: 100%; height: 400px;
             overflow-x: auto; overflow-y: hidden; z-index: 30;
             scrollbar-width: thin; scrollbar-color: rgba(255,100,100,0.3) transparent;
             scroll-behavior: smooth;
@@ -181,31 +166,42 @@
         .note-card:hover { transform: scale(1.05); z-index: 40; background: white;}
 
         #garden {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
             z-index: 10; pointer-events: none;
         }
 
+        /* --- MOBILE ADJUSTMENTS --- */
         @media (max-width: 600px) {
-            .container { width: 90vw; height: 60vw; }
+            /* Scale down envelope physically to prevent stretching geometry */
+            .container { transform: scale(0.8); transform-origin: center; }
+            .container:hover { transform: scale(0.85); } /* Reduced hover scale */
+            
             .letter.full-mode { width: 90vw; height: 60vh; }
+            
             .header-area h1 { font-size: 2.8rem; }
-            .header-area h2 { font-size: 1rem; max-width: 90%; }
+            .header-area h2 { font-size: 1rem; }
+            
             .carousel-container { top: 180px; height: 320px; }
+            .carousel-track { gap: 15px; padding: 10px 20px; }
             .note-card { width: 160px; height: 130px; font-size: 1rem; }
-            /* Hide side hearts on mobile to save space */
-            .side-heart { display: none; }
+            
+            /* Smaller side hearts on mobile */
+            .pulsing-heart { width: 30px; height: 30px; }
+            .pulsing-heart::before, .pulsing-heart::after { width: 30px; height: 30px; }
+            .pulsing-heart::before { top: -15px; } .pulsing-heart::after { left: 15px; }
         }
 
-        .css-heart {
+        /* FLYING HEARTS */
+        .css-heart-fly {
             position: absolute; width: 30px; height: 30px;
             transform: rotate(-45deg); pointer-events: none; z-index: 50; opacity: 0; 
         }
-        .css-heart::before, .css-heart::after {
+        .css-heart-fly::before, .css-heart-fly::after {
             content: ""; position: absolute; width: 30px; height: 30px;
             border-radius: 50%; background-color: inherit; 
         }
-        .css-heart::before { top: -15px; left: 0; }
-        .css-heart::after { left: 15px; top: 0; }
+        .css-heart-fly::before { top: -15px; left: 0; }
+        .css-heart-fly::after { left: 15px; top: 0; }
 
         @keyframes floatUp { 
             0% { transform: translateY(0) rotate(-45deg) scale(0.5); opacity: 0; }
@@ -217,15 +213,20 @@
             50% { transform: translateY(50vh) rotate(-35deg) translateX(20px); }
             100% { transform: translateY(110vh) rotate(-45deg) translateX(-20px); opacity: 0; }
         }
+        
+        /* Cues */
+        .cue { position: absolute; font-family: 'Indie Flower'; color: #d6336c; font-size: 1.2rem; animation: pulseText 1s infinite; pointer-events: none; }
+        .cue-1 { top: -40px; left: 0; transform: rotate(-10deg); }
+        .cue-2 { bottom: -40px; right: 0; transform: rotate(10deg); }
+        @keyframes pulseText { from { opacity: 0.7; } to { opacity: 1; transform: scale(1.1); } }
     </style>
 </head>
 <body>
 
     <div class="container" id="container" onclick="openEnvelope()">
+        <div class="cue cue-1">Open Me! 💌</div>
+        <div class="cue cue-2">What's inside? 👀</div>
         
-        <div class="hint-text hint-1" style="--r: -15deg">Open me! 💌</div>
-        <div class="hint-text hint-2" style="--r: 10deg">What's inside? 👀</div>
-
         <div class="envelope">
             <div class="back"></div>
             <div class="letter" id="letter">
@@ -251,16 +252,16 @@
 
     <div id="celebration">
         <div class="header-area">
-            <h1>YAY! I Love You! ❤️</h1>
-            <h2>Here are 100 reasons why:</h2>
+            <div class="pulsing-heart"></div>
+            <div class="text-container">
+                <h1>YAY! I Love You!</h1>
+                <h2>Here are 100 reasons why:</h2>
+            </div>
+            <div class="pulsing-heart"></div>
         </div>
         
-        <div class="side-heart side-left">❤️</div>
-        <div class="side-heart side-right">❤️</div>
-
         <div class="carousel-container">
-            <div class="carousel-track" id="carouselTrack">
-                </div>
+            <div class="carousel-track" id="carouselTrack"></div>
         </div>
 
         <canvas id="garden"></canvas>
@@ -273,13 +274,12 @@
         const letter = document.getElementById('letter');
         const noBtn = document.getElementById('noBtn');
 
-        // 1. ENVELOPE LOGIC
+        // 1. OPEN ENVELOPE
         function openEnvelope() {
             if (!isOpen) {
                 container.classList.add('open');
                 isOpen = true;
-                // Hide hints
-                document.querySelectorAll('.hint-text').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.cue').forEach(el => el.style.display = 'none');
                 
                 for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
 
@@ -290,38 +290,39 @@
             }
         }
 
-        // 2. SAFE RUNAWAY BUTTON (Mobile Touch Fix)
-        let hasRunAway = false;
+        // 2. SAFE RUNAWAY BUTTON (DOM MOVEMENT)
         function runAway(e) {
-            // Prevent actual click on mobile
-            if(e.type === 'touchstart') e.preventDefault(); 
             e.stopPropagation();
-            
             if (!canRunaway) return;
             
-            if (!hasRunAway) {
+            // Move button to BODY to escape envelope transform context
+            if (noBtn.parentNode !== document.body) {
                 const rect = noBtn.getBoundingClientRect();
                 noBtn.style.left = rect.left + 'px';
                 noBtn.style.top = rect.top + 'px';
-                noBtn.style.position = 'fixed'; 
-                hasRunAway = true;
-                setTimeout(moveButton, 50); 
-            } else {
-                moveButton();
-            }
-            
-            function moveButton() {
-                const padding = 100;
-                const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-                const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-                
-                const newX = Math.max(padding, Math.random() * maxX);
-                const newY = Math.max(padding, Math.random() * maxY);
-
-                noBtn.style.left = newX + 'px'; 
-                noBtn.style.top = newY + 'px'; 
+                noBtn.style.position = 'fixed';
                 noBtn.style.zIndex = '2000';
+                document.body.appendChild(noBtn);
             }
+
+            // Calculate new position
+            const pad = 100;
+            const winW = window.innerWidth;
+            const winH = window.innerHeight;
+            const btnW = noBtn.offsetWidth;
+            const btnH = noBtn.offsetHeight;
+            
+            const newX = Math.random() * (winW - btnW - pad * 2) + pad;
+            const newY = Math.random() * (winH - btnH - pad * 2) + pad;
+
+            noBtn.style.left = newX + 'px'; 
+            noBtn.style.top = newY + 'px'; 
+            
+            // Grow Yes
+            const yesBtn = document.getElementById('yesBtn');
+            let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = (currentSize + 2) + 'px';
+            yesBtn.style.padding = '15px 40px';
         }
 
         // 3. CELEBRATION
@@ -330,6 +331,8 @@
             document.body.style.backgroundColor = "#fce4ec"; 
             container.style.display = 'none';
             letter.style.display = 'none'; 
+            // Also hide the floating No button if it exists on body
+            noBtn.style.display = 'none';
             
             const celeb = document.getElementById('celebration');
             celeb.style.display = 'block';
@@ -362,11 +365,11 @@
             });
         }
 
-        // 5. HEARTS
+        // 5. HEART SPAWNER
         const heartColors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#C3B1E1'];
         function spawnHeart(isBalloon) {
             const heart = document.createElement('div');
-            heart.classList.add('css-heart');
+            heart.classList.add('css-heart-fly');
             heart.style.backgroundColor = heartColors[Math.floor(Math.random() * heartColors.length)];
 
             if (isBalloon) {
@@ -395,7 +398,7 @@
             
             function resize() {
                 canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight * 0.5; 
+                canvas.height = window.innerHeight * 0.6; // Bottom 60%
             }
             resize();
             window.addEventListener('resize', resize);
@@ -449,11 +452,10 @@
                 ctx.restore();
             }
 
-            // Draw Heart Shape for the special flower
             function drawHeartHead(x, y, size) {
                 ctx.save();
                 ctx.translate(x, y);
-                const s = size * 20;
+                const s = size * 40; // BIGGER
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(-s/2, -s/2, -s, s/3, 0, s);
@@ -476,7 +478,7 @@
                     if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
                     else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
                     else if (type === 'tulip') this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
-                    else this.palette = {base:'red',mid:'red',tip:'red'}; // Heart fallback
+                    else this.palette = {base:'red',mid:'red',tip:'red'};
 
                     this.bloomed = false; this.bloomSize = 0; this.maxBloom = Math.random() * 0.5 + 0.6; 
                 }
@@ -494,7 +496,6 @@
                         const headX = this.x; const headY = this.originalY - this.height; const s = this.bloomSize * 35;
                         
                         if (this.type === 'heart') {
-                            // SPECIAL HEART FLOWER
                             drawHeartHead(headX, headY - 10, this.bloomSize);
                         } else if (this.type === 'rose') {
                             for(let i=0; i<8; i++) { drawComplexPetal(headX, headY, s, s, this.palette, (i * (Math.PI*2)/8), 0); }
@@ -520,22 +521,33 @@
 
             const types = ['rose', 'tulip', 'carnation'];
             const screenCenter = window.innerWidth / 2;
+            
+            // Separate arrays so we can sort them
+            const gardenFlowers = [];
+            let heartFlower = null;
 
             for(let i=0; i<window.innerWidth; i+=15) {
                 const depthY = Math.random() * 60; 
-                
-                // Check if this flower is the closest to the center
                 let type = types[Math.floor(Math.random()*types.length)];
-                if (Math.abs(i - screenCenter) < 10) {
+                
+                // Identify the center flower
+                if (Math.abs(i - screenCenter) < 10 && !heartFlower) {
                     type = 'heart';
+                    heartFlower = new Flower(i, canvas.height + 20, type);
+                } else {
+                    gardenFlowers.push(new Flower(i + Math.random()*10, canvas.height + depthY, type));
                 }
-
-                flowers.push(new Flower(i + Math.random()*10, canvas.height + depthY, type));
             }
 
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                flowers.forEach(f => f.update());
+                
+                // Draw normal flowers first
+                gardenFlowers.forEach(f => f.update());
+                
+                // Draw Heart Flower LAST so it is on top
+                if(heartFlower) heartFlower.update();
+                
                 requestAnimationFrame(animate);
             }
             animate();
