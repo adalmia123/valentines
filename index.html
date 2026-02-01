@@ -129,6 +129,7 @@
         .letter h2 { font-family: 'Dancing Script', cursive; color: #d32f2f; font-size: 2rem; margin: 0 0 15px 0; }
         .letter p { font-family: 'Indie Flower', cursive; font-size: 1.15rem; color: #444; margin: 0 0 12px 0; line-height: 1.3; font-weight: 600; }
         
+        /* Highlight Classes - Reused in Letter AND Note Cards */
         .highlight { font-weight: bold; padding: 0 4px; border-radius: 4px; }
         .h-amazing { color: #e63946; background: #ffe5ec; }
         .h-beautiful { color: #fb5607; background: #fff0db; }
@@ -136,6 +137,8 @@
         .h-kind { color: #8338ec; background: #f2e6ff; }
         .h-smart { color: #3a86ff; background: #e0edff; }
         .h-baddie { color: #ffbe0b; background: #fffde0; }
+        /* Generic highlight for carousel */
+        .h-gen { color: #d6336c; background: #ffe6ea; }
 
         .btn-group { margin-top: 15px; display: flex; gap: 15px; justify-content: center; width: 100%; position: relative; }
         button {
@@ -374,29 +377,29 @@
 
         // --- 100 CUSTOM REASONS ---
         const myReasons = [
-            "Reason 1: You make me a better person every single day.",
-            "Reason 2: I get lost in your mesmerizing eyes.",
-            "Reason 3: Those cute, squishy cheeks I love to pinch.",
-            "Reason 4: That beautiful smile lights up my world.",
-            "Reason 5: I love the way you smell.",
-            "Reason 6: Holding your soft hands fits perfectly.",
-            "Reason 7: Melting into your warm hugs.",
-            "Reason 8: Seeing your nose crinkle is the cutest thing.",
-            "Reason 9: Playing with your stunning hair.",
-            "Reason 10: Waking up to your adorable sleepy face.",
-            "Reason 11: The sparkle in your eyes when you laugh.",
-            "Reason 12: Admiring your natural elegance.",
-            "Reason 13: Hearing your infectious laugh makes my day.",
-            "Reason 14: Feeling your gentle touch.",
-            "Reason 15: Seeing your radiant glow.",
-            "Reason 16: Your incredible ambition inspires me.",
-            "Reason 17: How smart and sharp you are.",
-            "Reason 18: Your boundless kindness to everyone.",
+            "Reason 1: You make me a <span class='highlight h-better'>better</span> person every single day.",
+            "Reason 2: I get lost in your <span class='highlight h-smart'>mesmerizing</span> eyes.",
+            "Reason 3: Those <span class='highlight h-cute'>cute</span>, squishy cheeks I love to pinch.",
+            "Reason 4: That <span class='highlight h-beautiful'>beautiful</span> smile lights up my world.",
+            "Reason 5: I love the way you <span class='highlight h-amazing'>smell</span>.",
+            "Reason 6: Holding your <span class='highlight h-kind'>soft</span> hands fits perfectly.",
+            "Reason 7: Melting into your <span class='highlight h-beautiful'>warm</span> hugs.",
+            "Reason 8: Seeing your nose crinkle is the <span class='highlight h-cute'>cutest</span> thing.",
+            "Reason 9: Playing with your <span class='highlight h-amazing'>stunning</span> hair.",
+            "Reason 10: Waking up to your <span class='highlight h-cute'>adorable</span> sleepy face.",
+            "Reason 11: The <span class='highlight h-beautiful'>sparkle</span> in your eyes when you laugh.",
+            "Reason 12: Admiring your natural <span class='highlight h-baddie'>elegance</span>.",
+            "Reason 13: Hearing your <span class='highlight h-amazing'>infectious</span> laugh makes my day.",
+            "Reason 14: Feeling your <span class='highlight h-kind'>gentle</span> touch.",
+            "Reason 15: Seeing your <span class='highlight h-beautiful'>radiant</span> glow.",
+            "Reason 16: Your incredible <span class='highlight h-smart'>ambition</span> inspires me.",
+            "Reason 17: How <span class='highlight h-smart'>smart</span> and sharp you are.",
+            "Reason 18: Your boundless <span class='highlight h-kind'>kindness</span> to everyone.",
             "Reason 19: You always support my dreams.",
             "Reason 20: I feel safer when I'm with you.",
             "Reason 21: Our late-night talks about everything.",
             "Reason 22: Our silly inside jokes no one else gets.",
-            "Reason 23: The cute way you dance when you're happy.",
+            "Reason 23: The <span class='highlight h-cute'>cute</span> way you dance when you're happy.",
             "Reason 24: Your patience with me is amazing.",
             "Reason 25: You know exactly how to cheer me up.",
             "Reason 26: Listening to your sweet voice.",
@@ -422,7 +425,7 @@
             "Reason 46: Watching you stand up for yourself and me.",
             "Reason 47: You never take any bullshit.",
             "Reason 48: Your incredible fashion sense amazes me.",
-            "Reason 49: Hearing 'Baby dooorrr hehe' in your cute voice.",
+            "Reason 49: Hearing 'Baby dooorrr hehe' in your <span class='highlight h-cute'>cute</span> voice.",
             "Reason 50: Your resilience and refusal to give up.",
             "Reason 51: Your playful attitude keeps us young.",
             "Reason 52: Your understanding nature.",
@@ -442,7 +445,7 @@
             "Reason 66: Your resilience in hard times.",
             "Reason 67: You prioritize 'us'.",
             "Reason 68: Your ability to forgive.",
-            "Reason 69: Your cute focus face.",
+            "Reason 69: Your <span class='highlight h-cute'>cute</span> focus face.",
             "Reason 70: Your wisdom beyond your years.",
             "Reason 71: You make everyone feel included.",
             "Reason 72: Your passion for what you love.",
@@ -461,7 +464,7 @@
             "Reason 85: Your classiness and poise.",
             "Reason 86: The way you surprise me.",
             "Reason 87: Your reliability.",
-            "Reason 88: Your cute little sneezes.",
+            "Reason 88: Your <span class='highlight h-cute'>cute</span> little sneezes.",
             "Reason 89: How much you care about family.",
             "Reason 90: Your constant encouragement.",
             "Reason 91: Your bravery in facing fears.",
@@ -472,7 +475,7 @@
             "Reason 96: Your endless curiosity.",
             "Reason 97: You are protective of our love.",
             "Reason 98: You dream big and aim high.",
-            "Reason 99: You are simply perfect to me.",
+            "Reason 99: You are simply <span class='highlight h-amazing'>perfect</span> to me.",
             "Reason 100: I love you more than words can say."
         ];
         
@@ -483,7 +486,8 @@
             myReasons.forEach((reason) => {
                 const card = document.createElement('div');
                 card.classList.add('note-card');
-                card.innerText = reason;
+                // Use innerHTML so the spans render correctly
+                card.innerHTML = reason;
                 const color = cardColors[Math.floor(Math.random() * cardColors.length)];
                 card.style.borderTop = `5px solid ${color}`;
                 track.appendChild(card);
@@ -598,7 +602,7 @@
                     
                     if (type === 'heart') {
                         this.palette = {base:'red',mid:'red',tip:'red'};
-                        this.maxHeight = canvas.height - 50; // Taller
+                        this.maxHeight = canvas.height - 180; // Shorter to avoid overlapping carousel
                     } else if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
                     else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
                     else this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
@@ -613,11 +617,13 @@
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
-                    // Leaves every 80px
+                    // Leaves every 80px with variance
                     if (this.height > 50) {
                         for(let h=50; h<this.height; h+=80) {
                             const dir = (h % 160 === 0) ? 1 : -1;
-                            drawComplexPetal(this.x, this.originalY - h, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, dir*1.5, 0);
+                            // Random angle variance for leaves
+                            const angleVariance = (Math.random() * 0.5) - 0.25; 
+                            drawComplexPetal(this.x, this.originalY - h, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, (dir*1.5) + angleVariance, 0);
                         }
                     }
 
