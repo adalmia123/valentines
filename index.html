@@ -10,7 +10,7 @@
             --bg-color: #ffe6ea;
             --env-color: #ff5c8a;      
             --env-dark: #d6336c;       
-            --env-flap-dark: #ff4075; /* Slightly darker for top flap */
+            --env-flap-dark: #ff4075; 
             --env-inside: #880e4f;     
             --paper-color: #fffbf0;    
             --paper-line: #e6d2b5;     
@@ -25,7 +25,6 @@
             margin: 0;
             font-family: 'Poppins', sans-serif;
             overflow: hidden; 
-            /* Prevent mobile bounce */
             overscroll-behavior: none;
         }
 
@@ -36,7 +35,6 @@
             height: 260px;
             cursor: pointer;
             z-index: 10;
-            /* Smooth scaling for hover */
             transition: transform 0.3s ease;
         }
 
@@ -55,7 +53,7 @@
             background: var(--paper-color); border: 1px solid var(--paper-line);
             z-index: 2; 
             transition: transform 0.6s ease-in-out, top 0.6s, left 0.6s, width 0.6s, height 0.6s, box-shadow 0.6s;
-            padding: 30px; box-sizing: border-box;
+            padding: 20px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center; text-align: center;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
@@ -66,21 +64,52 @@
         }
 
         .flap { position: absolute; }
-        .flap.left { top: 0; left: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-left: 220px solid var(--env-color); }
-        .flap.right { top: 0; right: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-right: 220px solid var(--env-color); }
-        .flap.bottom { bottom: 0; left: 0; border-left: 200px solid transparent; border-right: 200px solid transparent; border-bottom: 150px solid var(--env-dark); border-radius: 0 0 10px 10px; }
+        .flap.left { top: 0; left: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-left: 240px solid var(--env-color); }
+        .flap.right { top: 0; right: 0; border-top: 130px solid transparent; border-bottom: 130px solid transparent; border-right: 240px solid var(--env-color); }
+        .flap.bottom { bottom: 0; left: 0; border-left: 200px solid transparent; border-right: 200px solid transparent; border-bottom: 145px solid var(--env-dark); border-radius: 0 0 10px 10px; }
 
-        /* TOP LID (Darker Color) */
         .lid {
             position: absolute; top: 0; left: 0; width: 0; height: 0;
             border-left: 200px solid transparent; border-right: 200px solid transparent; 
-            border-top: 140px solid var(--env-flap-dark); /* Darker Color Here */
+            border-top: 140px solid var(--env-flap-dark); 
             transform-origin: top; transition: transform 0.6s ease-in-out; z-index: 4; 
         }
 
-        /* --- LETTER CONTENT --- */
-        .letter h2 { font-family: 'Dancing Script', cursive; color: #d32f2f; font-size: 2.5rem; margin: 5px 0 15px 0; }
-        .letter p { font-family: 'Caveat', cursive; font-size: 1.5rem; color: #444; margin: 5px 0; line-height: 1.2; }
+        /* --- CUES ("Open Me") --- */
+        .hint-text {
+            position: absolute;
+            font-family: 'Indie Flower', cursive;
+            color: #d6336c;
+            font-size: 1.2rem;
+            pointer-events: none;
+            animation: pulseText 1.5s infinite alternate;
+            white-space: nowrap;
+            z-index: 20;
+        }
+        .hint-1 { top: -60px; left: -40px; transform: rotate(-15deg); }
+        .hint-2 { bottom: -50px; right: -30px; transform: rotate(10deg); }
+        
+        @keyframes pulseText {
+            from { transform: scale(1) rotate(var(--r)); opacity: 0.8; }
+            to { transform: scale(1.1) rotate(var(--r)); opacity: 1; }
+        }
+
+        /* --- LETTER TEXT --- */
+        .letter h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #d32f2f;
+            font-size: 1.8rem;
+            margin: 5px 0 10px 0;
+        }
+        
+        .letter p {
+            font-family: 'Caveat', cursive;
+            font-size: 1.1rem;
+            color: #444;
+            margin: 3px 0;
+            line-height: 1.2;
+        }
+        
         .letter-content { opacity: 0; transition: opacity 0.5s ease 0.5s; }
 
         .open .lid { transform: rotateX(180deg); z-index: 0; }
@@ -89,12 +118,14 @@
         .letter.full-mode {
             position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(1.2) !important; 
-            width: 400px; height: 500px; z-index: 1000;
+            width: 400px; height: 550px; z-index: 1000;
             box-shadow: 0 20px 60px rgba(0,0,0,0.4); border-radius: 10px;
+            padding: 40px 30px;
         }
         .letter.full-mode .letter-content { opacity: 1; }
 
-        .btn-group { margin-top: 40px; display: flex; gap: 20px; justify-content: center; }
+        /* Buttons */
+        .btn-group { margin-top: 30px; display: flex; gap: 20px; justify-content: center; }
         button {
             padding: 12px 35px; font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 16px;
             border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -104,36 +135,23 @@
         #noBtn { background-color: #e0e0e0; color: #333; position: relative; transition: top 0.4s ease, left 0.4s ease; }
         #yesBtn:hover { transform: scale(1.1); }
 
-        /* --- CELEBRATION PAGE --- */
+        /* --- CELEBRATION --- */
         #celebration {
-            display: none;
-            width: 100%; height: 100vh;
-            position: fixed; top: 0; left: 0;
-            background-color: var(--bg-color);
-            z-index: 100;
-            overflow: hidden; 
+            display: none; width: 100%; height: 100vh; position: fixed; top: 0; left: 0;
+            background-color: var(--bg-color); z-index: 100; overflow: hidden; 
         }
 
         .header-area {
             position: absolute; top: 20px; width: 100%; text-align: center; z-index: 20;
             display: flex; justify-content: center; align-items: center; gap: 20px;
         }
-        .header-area .text-container { display: flex; flex-direction: column; align-items: center; }
-        .header-area h1 {
-            font-family: 'Dancing Script', cursive; font-size: 4rem; color: #c92a42;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); margin: 0;
-        }
-        .header-area h2 {
-            font-family: 'Poppins', sans-serif; font-size: 1.2rem; color: #666;
-            margin-top: 5px; background: rgba(255,255,255,0.6); 
-            display: inline-block; padding: 5px 15px; border-radius: 20px;
-        }
+        .text-container { display: flex; flex-direction: column; align-items: center; }
+        .header-area h1 { font-family: 'Dancing Script', cursive; font-size: 4rem; color: #c92a42; margin: 0; text-shadow: 2px 2px 4px white; }
+        .header-area h2 { font-family: 'Poppins', sans-serif; font-size: 1.2rem; color: #666; margin-top: 5px; background: rgba(255,255,255,0.6); padding: 5px 15px; border-radius: 20px; }
 
-        /* SIDE PULSING HEARTS (CSS) */
         .pulsing-heart {
             width: 50px; height: 50px; background-color: #ff4d6d;
-            transform: rotate(-45deg); animation: pulse 1s infinite alternate;
-            position: relative;
+            transform: rotate(-45deg); animation: pulse 1s infinite alternate; position: relative;
         }
         .pulsing-heart::before, .pulsing-heart::after {
             content: ""; position: absolute; width: 50px; height: 50px;
@@ -141,100 +159,81 @@
         }
         .pulsing-heart::before { top: -25px; left: 0; }
         .pulsing-heart::after { left: 25px; top: 0; }
-
         @keyframes pulse { from { transform: rotate(-45deg) scale(1); } to { transform: rotate(-45deg) scale(1.2); } }
 
         /* CAROUSEL */
         .carousel-container {
             position: absolute; top: 160px; width: 100%; height: 400px;
             overflow-x: auto; overflow-y: hidden; z-index: 30;
-            scrollbar-width: thin; scrollbar-color: rgba(255,100,100,0.3) transparent;
-            scroll-behavior: smooth;
+            scrollbar-width: thin; scrollbar-color: rgba(255,100,100,0.3) transparent; scroll-behavior: smooth;
         }
         .carousel-track {
             display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; 
             gap: 20px; padding: 10px 50px; height: 100%; box-sizing: border-box;
         }
         .note-card {
-            width: 220px; height: 160px;
-            background: rgba(255, 255, 255, 0.85); border: 1px solid white;
+            width: 220px; height: 160px; background: rgba(255, 255, 255, 0.85); border: 1px solid white;
             border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            display: flex; align-items: center; justify-content: center;
-            padding: 15px; font-family: 'Indie Flower', cursive; font-size: 1.2rem; color: #444;
-            text-align: center; transition: transform 0.3s; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; padding: 15px;
+            font-family: 'Indie Flower', cursive; font-size: 1.2rem; color: #444; text-align: center;
+            transition: transform 0.3s; cursor: pointer;
         }
         .note-card:hover { transform: scale(1.05); z-index: 40; background: white;}
 
-        #garden {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
-            z-index: 10; pointer-events: none;
-        }
+        #garden { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; z-index: 10; pointer-events: none; }
 
         /* --- MOBILE ADJUSTMENTS --- */
         @media (max-width: 600px) {
-            /* Scale down envelope physically to prevent stretching geometry */
-            .container { transform: scale(0.8); transform-origin: center; }
-            .container:hover { transform: scale(0.85); } /* Reduced hover scale */
+            /* Fix clipping by scaling down and adding margin */
+            .container { transform: scale(0.85); margin-top: 50px; }
+            .hint-text { font-size: 1rem; }
+            .hint-1 { top: -50px; left: -20px; }
+            .hint-2 { bottom: -40px; right: -10px; }
             
-            .letter.full-mode { width: 90vw; height: 60vh; }
+            .letter.full-mode { width: 85vw; height: 65vh; padding: 20px; }
+            .letter h2 { font-size: 2rem; }
+            .letter p { font-size: 1rem; }
             
-            .header-area h1 { font-size: 2.8rem; }
-            .header-area h2 { font-size: 1rem; }
-            
-            .carousel-container { top: 180px; height: 320px; }
-            .carousel-track { gap: 15px; padding: 10px 20px; }
-            .note-card { width: 160px; height: 130px; font-size: 1rem; }
-            
-            /* Smaller side hearts on mobile */
+            .header-area h1 { font-size: 2.5rem; }
+            .header-area h2 { font-size: 0.9rem; }
             .pulsing-heart { width: 30px; height: 30px; }
             .pulsing-heart::before, .pulsing-heart::after { width: 30px; height: 30px; }
             .pulsing-heart::before { top: -15px; } .pulsing-heart::after { left: 15px; }
+            
+            .carousel-container { top: 140px; height: 320px; }
+            .note-card { width: 150px; height: 130px; font-size: 1rem; }
         }
 
-        /* FLYING HEARTS */
         .css-heart-fly {
-            position: absolute; width: 30px; height: 30px;
-            transform: rotate(-45deg); pointer-events: none; z-index: 50; opacity: 0; 
+            position: absolute; width: 30px; height: 30px; transform: rotate(-45deg); pointer-events: none; z-index: 50; opacity: 0; 
         }
         .css-heart-fly::before, .css-heart-fly::after {
-            content: ""; position: absolute; width: 30px; height: 30px;
-            border-radius: 50%; background-color: inherit; 
+            content: ""; position: absolute; width: 30px; height: 30px; border-radius: 50%; background-color: inherit; 
         }
         .css-heart-fly::before { top: -15px; left: 0; }
         .css-heart-fly::after { left: 15px; top: 0; }
 
-        @keyframes floatUp { 
-            0% { transform: translateY(0) rotate(-45deg) scale(0.5); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translateY(-400px) rotate(-45deg) scale(1.2); opacity: 0; }
-        }
-        @keyframes rainDown { 
-            0% { transform: translateY(-10vh) rotate(-45deg) translateX(0); opacity: 1; }
-            50% { transform: translateY(50vh) rotate(-35deg) translateX(20px); }
-            100% { transform: translateY(110vh) rotate(-45deg) translateX(-20px); opacity: 0; }
-        }
-        
-        /* Cues */
-        .cue { position: absolute; font-family: 'Indie Flower'; color: #d6336c; font-size: 1.2rem; animation: pulseText 1s infinite; pointer-events: none; }
-        .cue-1 { top: -40px; left: 0; transform: rotate(-10deg); }
-        .cue-2 { bottom: -40px; right: 0; transform: rotate(10deg); }
-        @keyframes pulseText { from { opacity: 0.7; } to { opacity: 1; transform: scale(1.1); } }
+        @keyframes floatUp { 0% { transform: translateY(0) rotate(-45deg) scale(0.5); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-400px) rotate(-45deg) scale(1.2); opacity: 0; } }
+        @keyframes rainDown { 0% { transform: translateY(-10vh) rotate(-45deg) translateX(0); opacity: 1; } 50% { transform: translateY(50vh) rotate(-35deg) translateX(20px); } 100% { transform: translateY(110vh) rotate(-45deg) translateX(-20px); opacity: 0; } }
     </style>
 </head>
 <body>
 
     <div class="container" id="container" onclick="openEnvelope()">
-        <div class="cue cue-1">Open Me! 💌</div>
-        <div class="cue cue-2">What's inside? 👀</div>
-        
+        <div class="hint-text hint-1" style="--r: -15deg">Open me! 💌</div>
+        <div class="hint-text hint-2" style="--r: 10deg">What's inside? 👀</div>
+
         <div class="envelope">
             <div class="back"></div>
             <div class="letter" id="letter">
                 <div class="letter-content">
-                    <h2>My Dearest,</h2>
-                    <p>I have a question...</p>
+                    <h2>To the love of my life,</h2>
+                    <p>You make my life so meaningful, and I'm the luckiest guy in the world.</p>
+                    <p>I love you wholeheartedly, and I can't wait for our life together and many more Valentines.</p>
+                    <p>You are my amazing, beautiful, cute, kind, smart, baddie princess, and I love you.</p>
                     <p><strong>Will you be my Valentine?</strong></p>
-                    <p style="font-size: 0.9rem; margin-top: 15px; color: #888;">(I promise to buy you flowers!)</p>
+                    <p style="font-size: 0.8rem; color: #888; margin-top: 10px;">(P.S. I promise to buy you flowers!)</p>
+                    
                     <div class="btn-group">
                         <button id="yesBtn" onclick="celebrate(event)">YES!</button>
                         <button id="noBtn" onmouseover="runAway(event)" ontouchstart="runAway(event)">No</button>
@@ -274,12 +273,11 @@
         const letter = document.getElementById('letter');
         const noBtn = document.getElementById('noBtn');
 
-        // 1. OPEN ENVELOPE
         function openEnvelope() {
             if (!isOpen) {
                 container.classList.add('open');
                 isOpen = true;
-                document.querySelectorAll('.cue').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.hint-text').forEach(el => el.style.display = 'none');
                 
                 for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
 
@@ -290,22 +288,22 @@
             }
         }
 
-        // 2. SAFE RUNAWAY BUTTON (DOM MOVEMENT)
+        let hasRunAway = false;
         function runAway(e) {
+            if(e.type === 'touchstart') e.preventDefault(); 
             e.stopPropagation();
             if (!canRunaway) return;
             
-            // Move button to BODY to escape envelope transform context
-            if (noBtn.parentNode !== document.body) {
+            if (!hasRunAway && noBtn.parentNode !== document.body) {
                 const rect = noBtn.getBoundingClientRect();
                 noBtn.style.left = rect.left + 'px';
                 noBtn.style.top = rect.top + 'px';
                 noBtn.style.position = 'fixed';
                 noBtn.style.zIndex = '2000';
                 document.body.appendChild(noBtn);
+                hasRunAway = true;
             }
 
-            // Calculate new position
             const pad = 100;
             const winW = window.innerWidth;
             const winH = window.innerHeight;
@@ -318,20 +316,17 @@
             noBtn.style.left = newX + 'px'; 
             noBtn.style.top = newY + 'px'; 
             
-            // Grow Yes
             const yesBtn = document.getElementById('yesBtn');
             let currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
             yesBtn.style.fontSize = (currentSize + 2) + 'px';
             yesBtn.style.padding = '15px 40px';
         }
 
-        // 3. CELEBRATION
         function celebrate(e) {
             e.stopPropagation();
             document.body.style.backgroundColor = "#fce4ec"; 
             container.style.display = 'none';
             letter.style.display = 'none'; 
-            // Also hide the floating No button if it exists on body
             noBtn.style.display = 'none';
             
             const celeb = document.getElementById('celebration');
@@ -342,7 +337,6 @@
             setInterval(() => spawnHeart(false), 400); 
         }
 
-        // 4. GENERATE NOTES
         const myReasons = [
             "Your kindness", "The way you smell", "Your cooking", "Your ambition",
             "Our late night talks", "Your eyes", "How you support me", "Your hugs",
@@ -365,7 +359,6 @@
             });
         }
 
-        // 5. HEART SPAWNER
         const heartColors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#C3B1E1'];
         function spawnHeart(isBalloon) {
             const heart = document.createElement('div');
@@ -389,23 +382,19 @@
             setTimeout(() => heart.remove(), 6000);
         }
 
-        // ==========================================
-        //  COMPLEX PROCEDURAL FLOWER ENGINE
-        // ==========================================
         function initGarden() {
             const canvas = document.getElementById('garden');
             const ctx = canvas.getContext('2d');
             
             function resize() {
                 canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight * 0.6; // Bottom 60%
+                canvas.height = window.innerHeight * 0.6; 
             }
             resize();
             window.addEventListener('resize', resize);
 
             const flowers = [];
 
-            // PALETTES
             const ROSE_PALETTES = [
                 { base: '#990000', mid: '#cc0000', tip: '#ff0000' }, 
                 { base: '#881111', mid: '#aa2222', tip: '#d00000' }, 
@@ -455,14 +444,15 @@
             function drawHeartHead(x, y, size) {
                 ctx.save();
                 ctx.translate(x, y);
-                const s = size * 40; // BIGGER
+                // 4x Size: Changed multiplier from 40 to 120
+                const s = size * 120; 
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(-s/2, -s/2, -s, s/3, 0, s);
                 ctx.bezierCurveTo(s, s/3, s/2, -s/2, 0, 0);
                 ctx.fillStyle = '#ff0000';
                 ctx.shadowColor = '#ff4d6d';
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = 15;
                 ctx.fill();
                 ctx.restore();
             }
@@ -475,10 +465,13 @@
                     this.growSpeed = Math.random() * 2 + 1;
                     this.type = type; 
                     
-                    if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
+                    if (type === 'heart') {
+                        this.palette = {base:'red',mid:'red',tip:'red'};
+                        // Make heart flower taller
+                        this.maxHeight = 350; 
+                    } else if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
                     else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
-                    else if (type === 'tulip') this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
-                    else this.palette = {base:'red',mid:'red',tip:'red'};
+                    else this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
 
                     this.bloomed = false; this.bloomSize = 0; this.maxBloom = Math.random() * 0.5 + 0.6; 
                 }
@@ -490,8 +483,15 @@
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
-                    if(this.height > 60) { drawComplexPetal(this.x, this.originalY - 50, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, -1.5, 0); }
-                    
+                    // More Leaves logic: Loop up the stem
+                    if (this.height > 50) {
+                        for(let h=50; h<this.height; h+=40) {
+                            // Alternate sides
+                            const dir = (h % 80 === 0) ? 1 : -1;
+                            drawComplexPetal(this.x, this.originalY - h, 20, 15, {base:'#2d6a4f',mid:'#40916c',tip:'#52b788'}, dir*1.5, 0);
+                        }
+                    }
+
                     if (this.bloomed) {
                         const headX = this.x; const headY = this.originalY - this.height; const s = this.bloomSize * 35;
                         
@@ -522,7 +522,7 @@
             const types = ['rose', 'tulip', 'carnation'];
             const screenCenter = window.innerWidth / 2;
             
-            // Separate arrays so we can sort them
+            // Separate arrays
             const gardenFlowers = [];
             let heartFlower = null;
 
