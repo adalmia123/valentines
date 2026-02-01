@@ -491,7 +491,7 @@
                 const card = document.createElement('div');
                 card.classList.add('note-card');
                 
-                // Remove any leftover HTML tags just in case
+                // Remove Highlight Tags for Clean Text
                 const cleanText = reason.replace(/<[^>]*>/g, '');
                 card.innerText = cleanText;
                 
@@ -586,8 +586,8 @@
             function drawHeartHead(x, y, size) {
                 ctx.save();
                 ctx.translate(x, y);
-                // 2.8x Size
-                const s = size * 85; 
+                // 2.8x Size (Base 30 * 2.8 approx 85) - Increased to 100 for visibility
+                const s = size * 100; 
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(-s/2, -s/2, -s, s/3, 0, s);
@@ -609,7 +609,7 @@
                     
                     if (type === 'heart') {
                         this.palette = {base:'red',mid:'red',tip:'red'};
-                        this.maxHeight = canvas.height - 180; 
+                        this.maxHeight = canvas.height - 180; // Keep reduced height
                     } else if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
                     else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
                     else this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
@@ -624,13 +624,17 @@
                     ctx.quadraticCurveTo(this.x + curve, this.originalY - this.height / 2, this.x, this.originalY - this.height);
                     ctx.strokeStyle = '#2d6a4f'; ctx.lineWidth = 4; ctx.stroke();
 
-                    // Leaves every 120px with variance & deterministic side
+                    // Leaves every 120px with alternating sides
+                    let toggle = 1;
                     if (this.height > 50) {
                         for(let h=50; h<this.height; h+=120) {
-                            const dir = Math.sin(h * 0.1) > 0 ? 1 : -1;
+                            toggle *= -1; // Explicit toggle for sides
+                            const dir = toggle;
+                            
+                            // Variance in shape
                             const widthVar = 20 + Math.cos(h) * 5;
                             const heightVar = 15 + Math.sin(h) * 3;
-                            const angleVariance = Math.sin(h) * 0.3;
+                            const angleVariance = Math.sin(h) * 0.2; // Slight angle randomness
                             
                             drawComplexPetal(
                                 this.x,
