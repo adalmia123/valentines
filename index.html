@@ -38,8 +38,7 @@
             transition: transform 0.3s ease;
         }
 
-        /* Only hover scale if not open */
-        .container:not(.open):hover { transform: scale(1.02); }
+        .container.hoverable:hover { transform: scale(1.02); }
 
         .envelope { position: relative; width: 100%; height: 100%; }
 
@@ -49,7 +48,7 @@
             border-radius: 0 0 10px 10px; z-index: 1;
         }
 
-        /* LETTER - INITIAL STATE (Small & Inside) */
+        /* THE LETTER */
         .letter {
             position: absolute; 
             bottom: 0; 
@@ -67,17 +66,22 @@
             text-align: center;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             
-            /* Prepare for the transition */
-            transform-origin: center center;
+            /* Transitions for the smooth center animation */
             transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform-origin: center center;
         }
 
-        /* LETTER - GROWN STATE (Added via JS) */
-        .letter.grown {
-            /* Position fixed is applied inline by JS to handle coordinates */
-            z-index: 2000 !important;
+        /* Mode 1: Sliding UP out of the envelope */
+        .letter.sliding {
+            transform: translateY(-180px);
+            z-index: 5;
+        }
+
+        /* Mode 2: Centered on screen */
+        .letter.centered {
             box-shadow: 0 20px 60px rgba(0,0,0,0.4);
             border-radius: 10px;
+            z-index: 2000 !important;
         }
 
         .pocket {
@@ -99,7 +103,6 @@
 
         .open .lid { transform: rotateX(180deg); z-index: 0; }
 
-        /* HINT TEXT */
         .hint-text {
             position: absolute;
             font-family: 'Indie Flower', cursive;
@@ -110,7 +113,7 @@
         .hint-2 { bottom: -50px; right: -30px; transform: rotate(10deg); }
         @keyframes pulseText { from { transform: scale(1) rotate(var(--r)); opacity: 0.8; } to { transform: scale(1.1) rotate(var(--r)); opacity: 1; } }
 
-        /* LETTER CONTENT STYLING */
+        /* LETTER TEXT */
         .letter-content {
             opacity: 0;
             width: 100%;
@@ -119,18 +122,13 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.5s ease 0.5s; /* Delay fade in until grown */
+            transition: opacity 0.5s ease 0.5s; 
         }
-        .letter.grown .letter-content { opacity: 1; }
+        .letter.centered .letter-content { opacity: 1; }
 
-        .letter h2 {
-            font-family: 'Dancing Script', cursive; color: #d32f2f; font-size: 2rem; margin: 0 0 15px 0;
-        }
-        .letter p {
-            font-family: 'Indie Flower', cursive; font-size: 1.15rem; color: #444; margin: 0 0 12px 0; line-height: 1.3; font-weight: 600;
-        }
+        .letter h2 { font-family: 'Dancing Script', cursive; color: #d32f2f; font-size: 2rem; margin: 0 0 15px 0; }
+        .letter p { font-family: 'Indie Flower', cursive; font-size: 1.15rem; color: #444; margin: 0 0 12px 0; line-height: 1.3; font-weight: 600; }
         
-        /* Highlight Classes */
         .highlight { font-weight: bold; padding: 0 4px; border-radius: 4px; }
         .h-amazing { color: #e63946; background: #ffe5ec; }
         .h-beautiful { color: #fb5607; background: #fff0db; }
@@ -139,7 +137,6 @@
         .h-smart { color: #3a86ff; background: #e0edff; }
         .h-baddie { color: #ffbe0b; background: #fffde0; }
 
-        /* Buttons */
         .btn-group { margin-top: 15px; display: flex; gap: 15px; justify-content: center; width: 100%; position: relative; }
         button {
             padding: 10px 30px; font-family: 'Poppins', sans-serif; font-weight: bold; font-size: 14px;
@@ -148,6 +145,7 @@
         }
         #yesBtn { background-color: #ff4d6d; color: white; }
         #noBtn { background-color: #e0e0e0; color: #333; position: relative; transition: top 0.4s ease, left 0.4s ease; }
+        #yesBtn:hover { transform: scale(1.1); }
         
         /* CELEBRATION */
         #celebration {
@@ -199,13 +197,18 @@
             .container { transform: scale(0.85); margin-top: 60px; }
             .hint-text { font-size: 1rem; }
             
+            /* Letter full mode adjustment for mobile */
+            .letter.centered { width: 90vw !important; height: 75vh !important; }
+            .letter h2 { font-size: 1.8rem; margin-bottom: 10px;}
+            .letter p { font-size: 1rem; margin-bottom: 10px; }
+            
             .header-area h1 { font-size: 2.5rem; }
             .pulsing-heart { width: 30px; height: 30px; }
             .pulsing-heart::before, .pulsing-heart::after { width: 30px; height: 30px; }
             .pulsing-heart::before { top: -15px; } .pulsing-heart::after { left: 15px; }
             
             .carousel-container { top: 130px; height: 300px; }
-            .note-card { width: 150px; height: 120px; font-size: 0.95rem; }
+            .note-card { width: 150px; height: 120px; font-size: 0.9rem; }
         }
 
         .css-heart-fly {
@@ -223,7 +226,7 @@
 </head>
 <body>
 
-    <div class="container" id="container" onclick="openEnvelope()">
+    <div class="container hoverable" id="container" onclick="openEnvelope()">
         <div class="hint-text hint-1" style="--r: -15deg">Open me! 💌</div>
         <div class="hint-text hint-2" style="--r: 10deg">What's inside? 👀</div>
 
@@ -234,9 +237,9 @@
                 <div class="letter-content">
                     <h2>To the love of my life,</h2>
                     
-                    <p>You make my life so meaningful, and I'm the luckiest guy in the world to be yours.</p>
+                    <p>You make my life so incredibly meaningful, and I truly believe I am the luckiest guy in the world just to be by your side.</p>
                     
-                    <p>I love you wholeheartedly, and I can't wait for our life together and many more Valentines.</p>
+                    <p>I love you wholeheartedly, and I can't wait for everything our future holds—building a life together and celebrating a million more Valentines.</p>
                     
                     <p>You are my <span class="highlight h-amazing">amazing</span>, <span class="highlight h-beautiful">beautiful</span>, <span class="highlight h-cute">cute</span>, <span class="highlight h-kind">kind</span>, <span class="highlight h-smart">smart</span>, <span class="highlight h-baddie">baddie</span> princess, and I love you.</p>
                     
@@ -286,46 +289,41 @@
         function openEnvelope() {
             if (!isOpen) {
                 container.classList.add('open');
+                container.classList.remove('hoverable'); 
                 isOpen = true;
-                
-                // Hide hints
                 document.querySelectorAll('.hint-text').forEach(el => el.style.display = 'none');
                 
-                // 1. Get current position of the letter BEFORE we move it
-                const rect = letter.getBoundingClientRect();
-                
-                // 2. Set it to fixed at that exact spot (so it doesn't jump visually)
-                letter.style.position = 'fixed';
-                letter.style.top = rect.top + 'px';
-                letter.style.left = rect.left + 'px';
-                letter.style.width = rect.width + 'px';
-                letter.style.height = rect.height + 'px';
-                letter.style.zIndex = 1000;
-                
-                // 3. Force reflow to ensure browser registers the start position
-                void letter.offsetWidth;
+                // STEP 1: Slide UP
+                letter.classList.add('sliding');
 
-                // 4. Animate to Center (Small -> Big)
-                // We use setTimeout to allow the 'open' lid animation to start first
+                // STEP 2: Detach and Center
                 setTimeout(() => {
+                    const rect = letter.getBoundingClientRect();
+                    letter.style.position = 'fixed';
+                    letter.style.top = rect.top + 'px';
+                    letter.style.left = rect.left + 'px';
+                    letter.style.width = rect.width + 'px';
+                    letter.style.height = rect.height + 'px';
+                    letter.style.transform = 'none'; 
+                    
+                    void letter.offsetWidth; 
+
                     letter.style.top = '50%';
                     letter.style.left = '50%';
                     letter.style.transform = 'translate(-50%, -50%)';
                     
-                    // Responsive sizing for the "Grown" letter
                     if (window.innerWidth < 600) {
                         letter.style.width = '90vw';
-                        letter.style.height = '65vh';
+                        letter.style.height = '75vh';
                     } else {
                         letter.style.width = '450px';
-                        letter.style.height = '600px';
+                        letter.style.height = '620px';
                     }
                     
-                    letter.classList.add('grown');
+                    letter.classList.add('centered');
                     canRunaway = true;
-                }, 400); // Wait 0.4s for lid to flip a bit
+                }, 600); 
                 
-                // Spawn hearts
                 for(let i=0; i<15; i++){ setTimeout(() => spawnHeart(true), i * 150); }
             }
         }
@@ -364,7 +362,7 @@
             document.body.style.backgroundColor = "#fce4ec"; 
             container.style.display = 'none';
             letter.style.display = 'none'; 
-            if(noBtn) noBtn.style.display = 'none';
+            noBtn.style.display = 'none';
             
             const celeb = document.getElementById('celebration');
             celeb.style.display = 'block';
@@ -374,108 +372,108 @@
             setInterval(() => spawnHeart(false), 400); 
         }
 
-        // --- 100 REASONS (Physical & Romantic) ---
+        // --- 100 CUSTOM REASONS ---
         const myReasons = [
-            "Reason 1: Your mesmerizing eyes that I get lost in.",
-            "Reason 2: Your cute, squishy cheeks.",
-            "Reason 3: Your beautiful smile.",
-            "Reason 4: The way you smell so good.",
-            "Reason 5: Your soft hands.",
-            "Reason 6: Your warm hugs.",
-            "Reason 7: The cute way your nose crinkles.",
-            "Reason 8: Your stunning hair.",
-            "Reason 9: Your adorable sleepy face.",
-            "Reason 10: The sparkle in your eyes.",
-            "Reason 11: Your gorgeous style.",
-            "Reason 12: Your elegance.",
-            "Reason 13: Your infectious laugh.",
-            "Reason 14: Your gentle touch.",
-            "Reason 15: Your radiant glow.",
-            "Reason 16: Your ambition.",
-            "Reason 17: How smart you are.",
-            "Reason 18: Your kindness.",
-            "Reason 19: You support my dreams.",
-            "Reason 20: I feel safe with you.",
-            "Reason 21: Our late-night talks.",
-            "Reason 22: Our inside jokes.",
-            "Reason 23: The way you dance.",
-            "Reason 24: Your patience.",
-            "Reason 25: You cheer me up.",
-            "Reason 26: Your singing voice.",
-            "Reason 27: The way you look at me.",
-            "Reason 28: Doing nothing together.",
-            "Reason 29: Your empathy.",
-            "Reason 30: You're my best friend.",
-            "Reason 31: You make me better.",
+            "Reason 1: You make me a better person every single day.",
+            "Reason 2: I get lost in your mesmerizing eyes.",
+            "Reason 3: Those cute, squishy cheeks I love to pinch.",
+            "Reason 4: That beautiful smile lights up my world.",
+            "Reason 5: I love the way you smell.",
+            "Reason 6: Holding your soft hands fits perfectly.",
+            "Reason 7: Melting into your warm hugs.",
+            "Reason 8: Seeing your nose crinkle is the cutest thing.",
+            "Reason 9: Playing with your stunning hair.",
+            "Reason 10: Waking up to your adorable sleepy face.",
+            "Reason 11: The sparkle in your eyes when you laugh.",
+            "Reason 12: Admiring your natural elegance.",
+            "Reason 13: Hearing your infectious laugh makes my day.",
+            "Reason 14: Feeling your gentle touch.",
+            "Reason 15: Seeing your radiant glow.",
+            "Reason 16: Your incredible ambition inspires me.",
+            "Reason 17: How smart and sharp you are.",
+            "Reason 18: Your boundless kindness to everyone.",
+            "Reason 19: You always support my dreams.",
+            "Reason 20: I feel safer when I'm with you.",
+            "Reason 21: Our late-night talks about everything.",
+            "Reason 22: Our silly inside jokes no one else gets.",
+            "Reason 23: The cute way you dance when you're happy.",
+            "Reason 24: Your patience with me is amazing.",
+            "Reason 25: You know exactly how to cheer me up.",
+            "Reason 26: Listening to your sweet voice.",
+            "Reason 27: The way you look at me with love.",
+            "Reason 28: We can do absolutely nothing and still have fun.",
+            "Reason 29: Your deep empathy for others.",
+            "Reason 30: You are truly my best friend.",
+            "Reason 31: You challenge me to grow.",
             "Reason 32: Your adventurous spirit.",
-            "Reason 33: How thoughtful you are.",
-            "Reason 34: You listen to me.",
-            "Reason 35: Your honesty.",
-            "Reason 36: Your hard work.",
-            "Reason 37: Our memories.",
-            "Reason 38: Our future.",
-            "Reason 39: You respect me.",
-            "Reason 40: Your perspective.",
-            "Reason 41: Your comfort.",
-            "Reason 42: You have my back.",
-            "Reason 43: Your cute texts.",
-            "Reason 44: Your excitement.",
-            "Reason 45: You make life fun.",
-            "Reason 46: Your confidence.",
-            "Reason 47: Your strength.",
-            "Reason 48: Your generosity.",
-            "Reason 49: You chose me.",
-            "Reason 50: You make me feel special.",
-            "Reason 51: Your playfulness.",
-            "Reason 52: Your understanding.",
-            "Reason 53: Your loyalty.",
-            "Reason 54: Your music taste.",
-            "Reason 55: You inspire me.",
-            "Reason 56: Your creativity.",
-            "Reason 57: Saying my name.",
-            "Reason 58: Remembering details.",
-            "Reason 59: Your optimism.",
-            "Reason 60: You calm me down.",
-            "Reason 61: Your independence.",
-            "Reason 62: I'm proud of you.",
-            "Reason 63: You take care of yourself.",
-            "Reason 64: Your vulnerability.",
-            "Reason 65: Growing together.",
-            "Reason 66: Your resilience.",
-            "Reason 67: Prioritizing us.",
-            "Reason 68: Your forgiveness.",
-            "Reason 69: Your focus face.",
-            "Reason 70: Your wisdom.",
-            "Reason 71: Inclusivity.",
-            "Reason 72: Your passion.",
-            "Reason 73: Your trust.",
-            "Reason 74: Your soul.",
-            "Reason 75: Cuddling with you.",
-            "Reason 76: Self-improvement.",
-            "Reason 77: Spontaneity.",
-            "Reason 78: Grace under pressure.",
-            "Reason 79: Appreciation.",
-            "Reason 80: Handwriting.",
-            "Reason 81: Determination.",
-            "Reason 82: Humor.",
-            "Reason 83: Expression.",
-            "Reason 84: Grounding me.",
-            "Reason 85: Classiness.",
-            "Reason 86: Surprises.",
-            "Reason 87: Reliability.",
-            "Reason 88: Cute sneezes.",
-            "Reason 89: Family values.",
-            "Reason 90: Encouragement.",
-            "Reason 91: Bravery.",
-            "Reason 92: Loving nature.",
-            "Reason 93: Making time.",
-            "Reason 94: Authenticity.",
-            "Reason 95: Being my light.",
-            "Reason 96: Curiosity.",
-            "Reason 97: Protectiveness.",
-            "Reason 98: Dreaming big.",
-            "Reason 99: You are perfect.",
-            "Reason 100: I love you more than words."
+            "Reason 33: How thoughtful you are with everything.",
+            "Reason 34: You really listen when I speak.",
+            "Reason 35: Your honesty helps us grow.",
+            "Reason 36: Your hard work ethic is admirable.",
+            "Reason 37: All the beautiful memories we've made.",
+            "Reason 38: The amazing future I see with you.",
+            "Reason 39: You respect my feelings and opinions.",
+            "Reason 40: The way you say 'Pikachu' melts me.",
+            "Reason 41: Listening to you sing on our calls.",
+            "Reason 42: You actually laugh at my horrible jokes.",
+            "Reason 43: Butterflies when you call me 'baby'.",
+            "Reason 44: Feeling your warmth when we cuddle.",
+            "Reason 45: How you appreciate every gift I give you.",
+            "Reason 46: Watching you stand up for yourself and me.",
+            "Reason 47: You never take any bullshit.",
+            "Reason 48: Your incredible fashion sense amazes me.",
+            "Reason 49: Hearing 'Baby dooorrr hehe' in your cute voice.",
+            "Reason 50: Your resilience and refusal to give up.",
+            "Reason 51: Your playful attitude keeps us young.",
+            "Reason 52: Your understanding nature.",
+            "Reason 53: Your unwavering loyalty.",
+            "Reason 54: Your great music taste.",
+            "Reason 55: You inspire me daily.",
+            "Reason 56: Your creativity shines in everything.",
+            "Reason 57: The way you say my name.",
+            "Reason 58: You remember the small details.",
+            "Reason 59: Your optimism lifts me up.",
+            "Reason 60: You know how to calm my anxiety.",
+            "Reason 61: Your independence is sexy.",
+            "Reason 62: I'm so proud to call you mine.",
+            "Reason 63: How well you take care of yourself.",
+            "Reason 64: Your vulnerability makes us stronger.",
+            "Reason 65: Watching how we grow together.",
+            "Reason 66: Your resilience in hard times.",
+            "Reason 67: You prioritize 'us'.",
+            "Reason 68: Your ability to forgive.",
+            "Reason 69: Your cute focus face.",
+            "Reason 70: Your wisdom beyond your years.",
+            "Reason 71: You make everyone feel included.",
+            "Reason 72: Your passion for what you love.",
+            "Reason 73: Your complete trust in me.",
+            "Reason 74: Your beautiful soul shines through.",
+            "Reason 75: Cuddling with you is my happy place.",
+            "Reason 76: We learn new things together.",
+            "Reason 77: Your spontaneity keeps life exciting.",
+            "Reason 78: Your grace under pressure.",
+            "Reason 79: You are so appreciative.",
+            "Reason 80: Your beautiful handwriting.",
+            "Reason 81: Your determination to succeed.",
+            "Reason 82: Your unique sense of humor.",
+            "Reason 83: How you express your feelings.",
+            "Reason 84: You ground me when I'm stressed.",
+            "Reason 85: Your classiness and poise.",
+            "Reason 86: The way you surprise me.",
+            "Reason 87: Your reliability.",
+            "Reason 88: Your cute little sneezes.",
+            "Reason 89: How much you care about family.",
+            "Reason 90: Your constant encouragement.",
+            "Reason 91: Your bravery in facing fears.",
+            "Reason 92: Your appreciation for nature.",
+            "Reason 93: You always make time for me.",
+            "Reason 94: Your authenticity; you are real.",
+            "Reason 95: You are my light in the dark.",
+            "Reason 96: Your endless curiosity.",
+            "Reason 97: You are protective of our love.",
+            "Reason 98: You dream big and aim high.",
+            "Reason 99: You are simply perfect to me.",
+            "Reason 100: I love you more than words can say."
         ];
         
         const cardColors = ['#FFB7C5', '#FFD1DC', '#AEC6CF', '#ADD8E6', '#FDFD96', '#FFFACD', '#C3B1E1'];
@@ -600,7 +598,7 @@
                     
                     if (type === 'heart') {
                         this.palette = {base:'red',mid:'red',tip:'red'};
-                        this.maxHeight = 300; 
+                        this.maxHeight = canvas.height - 50; // Taller
                     } else if (type === 'rose') this.palette = ROSE_PALETTES[Math.floor(Math.random() * ROSE_PALETTES.length)];
                     else if (type === 'carnation') this.palette = CARNATION_PALETTES[Math.floor(Math.random() * CARNATION_PALETTES.length)];
                     else this.palette = TULIP_PALETTES[Math.floor(Math.random() * TULIP_PALETTES.length)];
